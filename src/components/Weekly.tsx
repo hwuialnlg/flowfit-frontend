@@ -1,16 +1,26 @@
-import { Card, CardContent, Typography } from "@mui/material";
+import { Card, CardContent, CardHeader, Typography } from "@mui/material";
 import { Box } from "@mui/system";
 import React from "react";
 
-export default function Weekly() {
+interface WeeklyProps {
+    width: string,
+    height: string,
+}
+
+export default function Weekly(weekly : WeeklyProps) {
     return (
-        <Box display="flex" flexDirection={"row"} sx={{width: '100%', height: '40%'}}>
+        <Box display="flex" flexDirection={"row"} sx={{width: weekly.width, height: weekly.height}} columnGap={1.5}>
             {
                 ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"].map((val) => {
                     return (
                         <Card sx={{flex: 1, height: '80%'}}>
+                            <CardHeader title={val}
+                                sx={{
+                                    backgroundColor: "#4BC5EB"
+                                }}
+                            />
                             <CardContent>
-                                <Typography>{val}</Typography>
+                                <Typography>Data Stuff</Typography>
                             </CardContent>
                         </Card>
                     )

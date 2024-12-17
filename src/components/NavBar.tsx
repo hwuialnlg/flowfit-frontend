@@ -1,12 +1,12 @@
 import React, { useState } from "react";
 import Box from '@mui/material/Box';
-import { AppBar, IconButton, Stack, Toolbar, Typography } from "@mui/material";
+import { AppBar, Divider, IconButton, Stack, Toolbar, Typography } from "@mui/material";
 import { useNavigate } from "react-router";
 import { Person } from "@mui/icons-material"
 
 export default function NavBar() {
     const navigate = useNavigate();
-    const [pages, setPages] = useState(["Exercises"])
+    const [pages, setPages] = useState(["Dashboard", "Exercises", "Progress"])
     return (
         <AppBar position={'static'}>
             <Toolbar sx={{display: 'flex', justifyContent: 'space-between'}}>
@@ -28,11 +28,13 @@ export default function NavBar() {
                     >
                         FlowFit
                     </Typography>
+                    
+                    <Divider orientation='vertical' flexItem></Divider>
 
                     {
                         pages.map((page) => {
                             return (
-                                <Typography alignContent={'center'} textAlign={'center'}>{page}</Typography>
+                                <Typography onClick={() => navigate(`/${page.toLowerCase()}`)} alignContent={'center'} textAlign={'center'}>{page}</Typography>
                             )
                         })
                     }

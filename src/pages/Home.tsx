@@ -12,7 +12,7 @@ export default function Home() {
             <Stack flexDirection={"column"} width="100%" rowGap={2}>
                 <br/>
                 <Graph/>
-                <Weekly></Weekly>
+                <Weekly width={"100%"} height={"40%"}/>
             </Stack>
 
             {/* Customizable Columns of Data Features */}
