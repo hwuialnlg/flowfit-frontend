@@ -1,6 +1,7 @@
-import { Card, CardContent, CardHeader, Typography } from "@mui/material";
+import { Autocomplete, AutocompleteRenderInputParams, Card, CardContent, CardHeader, Checkbox, FormControl, FormControlLabel, InputLabel, MenuItem, Select, TextField, Typography } from "@mui/material";
 import { Container, Stack } from "@mui/system";
 import React from "react";
+import Graph from "../components/Graph.tsx";
 
 export default function Home() {
     return (
@@ -20,30 +21,27 @@ export default function Home() {
                 }}
             >
                 <br/>
-                {/* Might be better off splitting this up into a component */}
-                <Card sx={{height: '33%'}}>
-                    <br/>
-                    <Typography textAlign={"center"}>Weight Progress</Typography>
-                    <CardContent>
-                        {/* Graph */}
-                    </CardContent>
-                </Card>
-            
-                <Card sx={{height: '33%'}}>
-                    <br/>
-                    <Typography textAlign={"center"}>Weight Progress</Typography>
-                    <CardContent>
-                        {/* Graph */}
-                    </CardContent>
-                </Card>
-
-                <Card sx={{height: '33%'}}>
-                    <br/>
-                    <Typography textAlign={"center"}>Weight Progress</Typography>
-                    <CardContent>
-                        {/* Graph */}
-                    </CardContent>
-                </Card>
+                <Autocomplete 
+                    renderInput={params => <TextField {...params} label="Data to Graph"></TextField>}
+                    renderOption={(_, option) => 
+                        <Stack>
+                            <Stack flexDirection={'row'} sx={{
+                                display: 'flex',
+                                justifyContent: 'space-between',
+                                alignItems: 'center',
+                                p: 1
+                            }}>
+                                <Typography>{option}</Typography>
+                                <Checkbox></Checkbox>
+                            </Stack>
+                        </Stack>
+                    }
+                    multiple
+                    options={["Gym", "Weight", "Exercise"]}
+               />
+                <Graph name="Weight"/>
+                <Graph name="Gym"/>
+                <Graph name="Exercise"/>
             </Stack>
         </Container>
     )
