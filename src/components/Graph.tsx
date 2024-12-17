@@ -1,17 +1,19 @@
-import { Card, Typography, CardContent } from "@mui/material";
-import React from "react";
+import { Card, CardContent, CardHeader, Typography } from "@mui/material"
+import React from "react"
 
-interface GraphProps {
-    name: string,
-}
-
-export default function Graph(gp : GraphProps) {
+export default function Graph() {
     return (
-        <Card sx={{height: '33%'}}>
-            <br/>
-            <Typography textAlign={"center"}>{gp.name} Progress</Typography>
+        <Card 
+            sx={{
+                height: '60%',
+                width: '100%',
+                borderRadius: 3,
+            }}
+            elevation={10}
+        >
+            <CardHeader title={<Typography>Overview</Typography>}></CardHeader>
             <CardContent>
-                {/* Graph */}
+                <Typography>Big Graph Goes Here with Buttons to Switch between Graphs</Typography>
             </CardContent>
         </Card>
     )

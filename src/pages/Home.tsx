@@ -1,19 +1,22 @@
 import { Autocomplete, AutocompleteRenderInputParams, Card, CardContent, CardHeader, Checkbox, FormControl, FormControlLabel, InputLabel, MenuItem, Select, TextField, Typography } from "@mui/material";
 import { Container, Stack } from "@mui/system";
 import React from "react";
+import InfoDisplay from "../components/InfoDisplay.tsx";
 import Graph from "../components/Graph.tsx";
+import Weekly from "../components/Weekly.tsx";
 
 export default function Home() {
     return (
-        <Container maxWidth='xl' sx={{height: '90vh', display: 'flex'}}>
+        <Container maxWidth='xl' sx={{height: '90vh', display: 'flex', columnGap: 10}}>
             {/* Streak Messaging */}
-            <Stack flexDirection={"column"} width="65%">
+            <Stack flexDirection={"column"} width="100%" rowGap={2}>
                 <br/>
-                <Typography>Welcome Message</Typography>
+                <Graph/>
+                <Weekly></Weekly>
             </Stack>
 
             {/* Customizable Columns of Data Features */}
-            <Stack flexDirection={"column"} width="35%" height="100%" rowGap={2}
+            <Stack flexDirection={"column"} width="20%" height="100%" rowGap={2}
                 sx={{
                     display: 'flex',
                     justifyContent: "center",
@@ -22,7 +25,7 @@ export default function Home() {
             >
                 <br/>
                 <Autocomplete 
-                    renderInput={params => <TextField {...params} label="Data to Graph"></TextField>}
+                    renderInput={params => <TextField {...params} label="Data to Display"></TextField>}
                     renderOption={(_, option) => 
                         <Stack>
                             <Stack flexDirection={'row'} sx={{
@@ -39,9 +42,10 @@ export default function Home() {
                     multiple
                     options={["Gym", "Weight", "Exercise"]}
                />
-                <Graph name="Weight"/>
-                <Graph name="Gym"/>
-                <Graph name="Exercise"/>
+                <InfoDisplay name="Weight" color={"#91C4F2"}/>
+                <InfoDisplay name="Gym" color={"#8CA0D7"}/>
+                <InfoDisplay name="Exercise" color={"#9D79BC"}/>
+                <InfoDisplay name="Exercise" color={"#A14DA0"}/>
             </Stack>
         </Container>
     )
