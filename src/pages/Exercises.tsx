@@ -149,7 +149,7 @@ export default function Exercises() {
                     }
                 }
                 else {
-                    if (source.droppableId.split(" ").length > 0) {
+                    if (source.droppableId.split(" ").length > 1) {
                         let sourceDay = source.droppableId.split(" ")[1].toLowerCase()
                         let copyDayGroups = Array.from(weeklyState[sourceDay]["groups"])
                         copyDayGroups.splice(source.index, 1)
@@ -190,7 +190,7 @@ export default function Exercises() {
                     {
                         ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"].map((day) => {
                             return (
-                                <Daily {...weeklyState[day.toLowerCase()]} key={day}></Daily>
+                                <Daily {...weeklyState[day.toLowerCase()]} key={day} state={weeklyState} setWeeklyState={setWeeklyState}></Daily>
                             )
                         })
                     }
@@ -250,7 +250,7 @@ export default function Exercises() {
                                             return (
                                                 <Draggable index={idx} key={idx} draggableId={"exercises " + val.name}>
                                                     {(provided) => (
-                                                        <Grid item xs={4} key={idx} ref={provided.innerRef} {...provided.draggableProps} {...provided.dragHandleProps}>
+                                                        <Grid item xs={3} key={idx} ref={provided.innerRef} {...provided.draggableProps} {...provided.dragHandleProps}>
                                                             <Card sx={{borderRadius: 0}} elevation={1}>
                                                                 <CardHeader title={<Typography textAlign={'center'}>{val.name}</Typography>}></CardHeader>
                                                             </Card>

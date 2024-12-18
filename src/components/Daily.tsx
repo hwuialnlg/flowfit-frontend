@@ -4,6 +4,19 @@ import { Card, CardHeader, CardContent, Grid, Stack, Typography, Button, Divider
 import React from "react";
 
 export default function Daily(daily : Daily) {
+    const removeItem = (idx, type) => {
+        let copyWeek = JSON.parse(JSON.stringify(daily.state))
+        if (type === "exercises") {
+            copyWeek[daily.day.toLowerCase()]["exercises"].splice(idx)
+        }
+        else {
+            copyWeek[daily.day.toLowerCase()]["groups"].splice(idx)
+        }
+
+        daily.setWeeklyState(copyWeek)
+    }
+
+
     return (
         <Card sx={{display: 'flex', flexDirection: 'column', flex: 1, height: '80%'}}>
             <CardHeader title={daily.day}
@@ -32,7 +45,7 @@ export default function Daily(daily : Daily) {
                                                 <Grid item xs={12} ref={provided.innerRef} {...provided.draggableProps} {...provided.dragHandleProps}>
                                                     <Stack flexDirection='row' sx={{display: "flex", alignItems: 'center'}}>
                                                         <Typography flex={1} textAlign={'left'}>{val.name}</Typography>
-                                                        <IconButton color="error"><Cancel/></IconButton>
+                                                        <IconButton onClick={() => removeItem(idx, "groups")} color="error"><Cancel/></IconButton>
                                                     </Stack>
                                                 </Grid>
                                             )}
@@ -66,7 +79,7 @@ export default function Daily(daily : Daily) {
                                                 <Grid item xs={12} ref={provided.innerRef} {...provided.draggableProps} {...provided.dragHandleProps}>
                                                     <Stack flexDirection='row' sx={{display: "flex", alignItems: 'center'}}>
                                                         <Typography textAlign={'left'} flex={1}>{val.name}</Typography>
-                                                        <IconButton color="error"><Cancel/></IconButton>
+                                                        <IconButton color="error" onClick={() => removeItem(idx, "exercises")}><Cancel/></IconButton>
                                                     </Stack>
                                                 </Grid>
                                             )}

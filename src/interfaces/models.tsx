@@ -25,4 +25,6 @@ interface Daily {
     groups?: Array<WorkoutGroup>
     exercises?: Array<Exercise>
     key?: string
+    state: Weekly
+    setWeeklyState: (arg0: Weekly) => void
 }
