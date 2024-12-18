@@ -1,6 +1,5 @@
-import { Autocomplete, Card, CardHeader, Container, Grid, Grid2, IconButton, Pagination, Paper, Skeleton, Stack, TextField, Tooltip, Typography } from "@mui/material";
-import React, { useEffect, useState } from "react";
-import Weekly from "../components/Weekly.tsx";
+import { Autocomplete, Card, CardHeader, Container, Grid, IconButton, Pagination, Paper, Stack, TextField, Tooltip, Typography } from "@mui/material";
+import React, { useState } from "react";
 import { Add } from "@mui/icons-material";
 import { DragDropContext, Draggable, Droppable } from "@hello-pangea/dnd";
 import Daily from "../components/Daily.tsx";
@@ -56,18 +55,48 @@ export default function Exercises() {
         {
             type: "exercise",
             name: "Bench"
-        }
+        },
+        {
+            type: "exercise",
+            name: "Bicep Curls"
+        },
+        {
+            type: "exercise",
+            name: "Lat Pulldowns",
+        },
+        {
+            type: "exercise",
+            name: "Triceps"
+        },
+
     ])
     const [page, setPage] = useState(1)
     const [filter, setFilter] = useState({} as Exercise)
-    const [workoutGroups, setWorkoutGroups] = useState([{
-        type: "workout",
-        name: "Chest",
-    },
+    const [workoutGroups, setWorkoutGroups] = useState([
+        {
+            type: "workout",
+            name: "Chest",
+        },
         {
             type: "workout",
             name: "Legs"
-        } 
+        },
+        {
+            type: "workout",
+            name: "Shoulders",
+        },
+        {
+            type: "workout",
+            name: "Arms"
+        },
+        {
+            type: "workout",
+            name: "Back",
+        },
+        {
+            type: "workout",
+            name: "Cardio"
+        }, 
     ])
     const [workoutGroupPage, setWorkoutGroupPage] = useState(1)
     const [weeklyState, setWeeklyState] = useState(initialWeek)
@@ -208,7 +237,7 @@ export default function Exercises() {
                 >
                     <Stack
                         sx={{
-                            width: '80%',
+                            width: '30%',
                             rowGap: 3
                         }}
                     >
@@ -231,7 +260,12 @@ export default function Exercises() {
                             </Tooltip>
                         </Stack>
                         
-                        <Droppable droppableId="exercises">
+                        <Droppable droppableId="exercises" direction="vertical"
+                            renderClone={(provided, _, rubric) => (
+                                <Typography textAlign={'center'} ref={provided.innerRef} {...provided.dragHandleProps} {...provided.draggableProps}>{exercises[rubric.source.index].name}</Typography>
+                            )}
+                        
+                        >
                             {(provided) => (
                                 <Grid
                                     sx={{
@@ -249,31 +283,47 @@ export default function Exercises() {
                                         exercises.slice((page - 1) * 6, Math.min(6 * page, exercises.length)).map((val, idx) => {
                                             return (
                                                 <Draggable index={idx} key={idx} draggableId={"exercises " + val.name}>
-                                                    {(provided) => (
-                                                        <Grid item xs={3} key={idx} ref={provided.innerRef} {...provided.draggableProps} {...provided.dragHandleProps}>
+                                                    {(provided, snapshot) => (
+                                                        <Grid item 
+                                                            xs={12} 
+                                                            key={idx} 
+                                                            ref={provided.innerRef} 
+                                                            {...provided.draggableProps} 
+                                                            {...provided.dragHandleProps}
+                                                            sx={{
+                                                                ...provided.draggableProps.style
+                                                            }}
+                                                        >
                                                             <Card sx={{borderRadius: 0}} elevation={1}>
                                                                 <CardHeader title={<Typography textAlign={'center'}>{val.name}</Typography>}></CardHeader>
                                                             </Card>
+                                                            {
+                                                                snapshot.isDragging ?? <Typography>{val.name}</Typography>
+                                                            }
                                                         </Grid>
                                                     )}
                                                 </Draggable>
                                             )
                                         })
                                     }
-                                    {/* {
-                                        Math.min(6 * page, exercises.length) === exercises.length &&
-                                            Array.from({length: Math.abs((6 * page) - exercises.length)}).map((_, idx) => {
-                                                return (
-                                                    <Grid item xs={4} key={idx}><></></Grid>
-                                                )
-                                            })
-                                    }                */}
                                     {provided.placeholder}
                                 </Grid>
                             )}
                         </Droppable>
+                        {
+                            exercises.length > 0 && 
+                                <Pagination
+                                    sx={{
+                                        display: 'flex',
+                                        justifyContent: 'center',
+                                        alignContent: 'center',
+                                        width: '100%'
+                                    }}
+                                    count={Math.ceil(exercises.length / 6)} onChange={(_, v) => {setPage(v)}}
+                                />
+                        }
                     </Stack>
-                    <Stack width={'20%'} rowGap={3}>
+                    <Stack width={'30%'} rowGap={3}>
                         <Autocomplete
                             options={workoutGroups}
                             getOptionLabel={(option) => option.name}
@@ -287,7 +337,7 @@ export default function Exercises() {
                                     ref={provided.innerRef}
                                 >
                                     {
-                                        workoutGroups.slice((workoutGroupPage - 1) * 2, Math.min(workoutGroupPage * 2, workoutGroups.length)).map((val, idx) => {
+                                        workoutGroups.slice((workoutGroupPage - 1) * 6, Math.min(workoutGroupPage * 6, workoutGroups.length)).map((val, idx) => {
                                             return (
                                                 <Draggable draggableId={"groups " + val.name} index={idx}>
                                                     {(provided) => (
@@ -301,51 +351,20 @@ export default function Exercises() {
                                             )
                                         })
                                     }
-                                    {
-                                        Math.min(2 * workoutGroupPage, workoutGroups.length) === workoutGroups.length &&
-                                            Array.from({length: (2 * page) - workoutGroups.length}).map((_, idx) => {
-                                                return (
-                                                    <Grid item xs={4} key={idx}>
-                                                        <Card>
-                                                            <CardHeader title={""}></CardHeader>
-                                                        </Card>
-                                                    </Grid>
-                                                )
-                                            })
-                                    }
                                     {provided.placeholder}
                                 </Grid>
                             )}
                         </Droppable>
+                        <Pagination
+                            sx={{
+                                display: 'flex',
+                                justifyContent: 'center',
+                                alignContent: 'center',
+                                width: '100%',
+                            }}
+                            count={Math.ceil(workoutGroups.length / 6)} onChange={(_, v) => setWorkoutGroupPage(v)}
+                        />
                     </Stack>
-                </Stack>
-                <Stack 
-                    width="100%"
-                    flexDirection={'row'}
-                    display='flex'
-                    mt={3}
-                >
-                    {
-                        exercises.length > 0 && 
-                            <Pagination
-                                sx={{
-                                    display: 'flex',
-                                    justifyContent: 'center',
-                                    alignContent: 'center',
-                                    width: '80%'
-                                }}
-                                count={Math.ceil(exercises.length / 9)} onChange={(_, v) => {setPage(v)}}
-                            />
-                    }
-                    <Pagination
-                        sx={{
-                            display: 'flex',
-                            justifyContent: 'center',
-                            alignContent: 'center',
-                            width: '20%',
-                        }}
-                        count={Math.ceil(workoutGroups.length / 3)} onChange={(_, v) => setWorkoutGroupPage(v)}
-                    />
                 </Stack>
             </DragDropContext>
         </Container>

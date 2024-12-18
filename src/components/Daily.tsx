@@ -7,10 +7,10 @@ export default function Daily(daily : Daily) {
     const removeItem = (idx, type) => {
         let copyWeek = JSON.parse(JSON.stringify(daily.state))
         if (type === "exercises") {
-            copyWeek[daily.day.toLowerCase()]["exercises"].splice(idx)
+            copyWeek[daily.day.toLowerCase()]["exercises"].splice(idx, 1)
         }
         else {
-            copyWeek[daily.day.toLowerCase()]["groups"].splice(idx)
+            copyWeek[daily.day.toLowerCase()]["groups"].splice(idx, 1)
         }
 
         daily.setWeeklyState(copyWeek)
@@ -19,7 +19,7 @@ export default function Daily(daily : Daily) {
 
     return (
         <Card sx={{display: 'flex', flexDirection: 'column', flex: 1, height: '80%'}}>
-            <CardHeader title={daily.day}
+            <CardHeader title={<Typography textAlign={'center'}>{daily.day}</Typography>}
                 sx={{
                     backgroundColor: "#4BC5EB"
                 }}
