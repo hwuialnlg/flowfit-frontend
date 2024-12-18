@@ -24,7 +24,7 @@ export default function Weekly(weekly : WeeklyProps) {
                             />
                             <CardContent>
                                 {/* Accepts only interfaces of type WorkoutGroup */}
-                                <Droppable droppableId={"groups " + val}>
+                                <Droppable droppableId={"groups " + val + "XD"}>
                                     {(provided) => (
                                         <Grid container {...provided.droppableProps}>
                                             {
@@ -51,7 +51,7 @@ export default function Weekly(weekly : WeeklyProps) {
                                 }
 
                                 {/* Accepts only interfaces of type Exercise */}
-                                <Droppable droppableId={"exercises " + val}>
+                                <Droppable droppableId={"exercises " + val + "XD"}>
                                     {(provided) => (
                                         <Grid container {...provided.droppableProps}>
                                             {

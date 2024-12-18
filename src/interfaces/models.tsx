@@ -24,4 +24,5 @@ interface Daily {
     day: string,
     groups?: Array<WorkoutGroup>
     exercises?: Array<Exercise>
+    key?: string
 }
