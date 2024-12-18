@@ -63,16 +63,16 @@ export default function Exercises() {
                 if (idSplit.length > 1) {
                     // Add element to destination
                     let day = idSplit[1].toLowerCase().trim()
-                    let copyStateDay = {...weeklyState[day]}
+                    let copyStateDay = JSON.parse(JSON.stringify(weeklyState[day]))
                     // day --> day, exercise --> day
                     if (source.droppableId.split(" ").length > 0) {
                         let sourceDay = source.droppableId.split(" ")[1].toLowerCase()
-                        copyStateDay["exercises"] = [...copyStateDay["exercises"], {...weeklyState[sourceDay]["exercises"][source.index]}]
+                        copyStateDay["exercises"] = [...copyStateDay["exercises"], JSON.parse(JSON.stringify(weeklyState[sourceDay]["exercises"][source.index]))]
                     }
                     else {
-                        copyStateDay["exercises"] = [...copyStateDay["exercises"], {...exercises[source.index]}]
+                        copyStateDay["exercises"] = [...copyStateDay["exercises"], JSON.parse(JSON.stringify(exercises[source.index]))]
                     }
-                    let weeklyStateCopy = {...weeklyState}
+                    let weeklyStateCopy = JSON.parse(JSON.stringify(weeklyState))
                     weeklyStateCopy[day] = copyStateDay
                     setWeeklyState(weeklyStateCopy)
 
@@ -81,7 +81,7 @@ export default function Exercises() {
                         let sourceDay = source.droppableId.split(" ")[1].toLowerCase()
                         let copyDayExercise = Array.from(weeklyState[sourceDay]["exercises"])
                         copyDayExercise.splice(source.index, 1)
-                        let copySourceWeek = {...weeklyState}
+                        let copySourceWeek = JSON.parse(JSON.stringify(weeklyState))
                         copySourceWeek[sourceDay]["exercises"] = copyDayExercise
                         setWeeklyState(copySourceWeek)
                     }
@@ -94,7 +94,7 @@ export default function Exercises() {
                         let sourceDay = source.droppableId.split(" ")[1].toLowerCase()
                         let copyDayExercise = Array.from(weeklyState[sourceDay]["exercises"])
                         copyDayExercise.splice(source.index, 1)
-                        let copySourceWeek = {...weeklyState}
+                        let copySourceWeek = JSON.parse(JSON.stringify(weeklyState))
                         copySourceWeek[sourceDay]["exercises"] = copyDayExercise
                         setWeeklyState(copySourceWeek)
                     }
