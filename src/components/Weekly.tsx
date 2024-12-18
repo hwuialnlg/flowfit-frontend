@@ -13,7 +13,7 @@ export default function Weekly(weekly : WeeklyProps) {
             {
                 ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"].map((val) => {
                     return (
-                        <Card sx={{flex: 1, height: '80%'}}>
+                        <Card sx={{flex: 1, height: '80%', overflowY: 'auto'}}>
                             <CardHeader title={val}
                                 sx={{
                                     backgroundColor: "#4BC5EB"

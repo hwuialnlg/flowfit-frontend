@@ -1,11 +1,12 @@
 import React, { useState } from "react";
 import Box from '@mui/material/Box';
 import { AppBar, Divider, IconButton, Stack, Toolbar, Typography } from "@mui/material";
-import { useNavigate } from "react-router";
+import { useLocation, useNavigate } from "react-router";
 import { Person } from "@mui/icons-material"
 
 export default function NavBar() {
     const navigate = useNavigate();
+    const location = useLocation()
     const [pages, setPages] = useState(["Dashboard", "Exercises", "Progress"])
     return (
         <AppBar position={'static'}>
@@ -34,7 +35,17 @@ export default function NavBar() {
                     {
                         pages.map((page) => {
                             return (
-                                <Typography onClick={() => navigate(`/${page.toLowerCase()}`)} alignContent={'center'} textAlign={'center'}>{page}</Typography>
+                                <Typography 
+                                    sx={{
+                                        '&:hover': {
+                                            backgroundColor: '#1B70C9',
+                                        },
+                                    }} 
+                                    onClick={() => navigate(`/${page.toLowerCase()}`)} 
+                                    alignContent={'center'} 
+                                    textAlign={'center'}
+                                >{page}
+                                </Typography>
                             )
                         })
                     }
