@@ -4,15 +4,22 @@ import React from "react";
 import InfoDisplay from "../components/InfoDisplay.tsx";
 import Graph from "../components/Graph.tsx";
 import Weekly from "../components/Weekly.tsx";
+import { DragDropContext } from "@hello-pangea/dnd";
 
 export default function Home() {
+    const handleDragEnd = () => {
+
+    }
+    
     return (
         <Container maxWidth='xl' sx={{height: '90vh', display: 'flex', columnGap: 10}}>
             {/* Streak Messaging */}
             <Stack flexDirection={"column"} width="100%" rowGap={2}>
                 <br/>
                 <Graph/>
-                <Weekly width={"100%"} height={"40%"}/>
+                <DragDropContext onDragEnd={handleDragEnd}>
+                    <Weekly width={"100%"} height={"40%"}/>
+                </DragDropContext>
             </Stack>
 
             {/* Customizable Columns of Data Features */}
