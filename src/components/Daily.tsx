@@ -5,7 +5,7 @@ import React from "react";
 
 export default function Daily(daily : Daily) {
     return (
-        <Card sx={{display: 'flex', flexDirection: 'column', flex: 1, height: '80%', overflowY: 'auto'}}>
+        <Card sx={{display: 'flex', flexDirection: 'column', flex: 1, height: '80%'}}>
             <CardHeader title={daily.day}
                 sx={{
                     backgroundColor: "#4BC5EB"
@@ -52,6 +52,11 @@ export default function Daily(daily : Daily) {
                     {(provided) => (
                         <CardContent
                             ref={provided.innerRef} {...provided.droppableProps}
+                            sx={{
+                                minHeight: '30%',
+                                maxHeight: '30%',
+                                overflowY: 'auto'
+                            }}
                         >
                             <Grid container>
                                 {

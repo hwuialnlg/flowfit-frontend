@@ -87,7 +87,7 @@ export default function Exercises() {
         // ONLY EVER REMOVE FROM THE DAYS BECAUSE NEED EXERCISES TO REMAIN SO CAN BE DRAGGED INTO OTHER DAYS
         // console.log(source)
         if (source.droppableId.split(" ")[0] === destination.droppableId.split(" ")[0]) {
-            if (destination.droppableId === "exercises") {
+            if (destination.droppableId.split(" ")[0] === "exercises") {
                 const idSplit = destination.droppableId.split(" ")
                 if (idSplit.length > 1) {
                     // Add element to destination
