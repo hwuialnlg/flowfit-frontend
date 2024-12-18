@@ -32,7 +32,7 @@ export default function Daily(daily : Daily) {
                                                 <Grid item xs={12} ref={provided.innerRef} {...provided.draggableProps} {...provided.dragHandleProps}>
                                                     <Stack flexDirection='row' sx={{display: "flex", alignItems: 'center'}}>
                                                         <Typography flex={1} textAlign={'left'}>{val.name}</Typography>
-                                                        <IconButton><Cancel/></IconButton>
+                                                        <IconButton color="error"><Cancel/></IconButton>
                                                     </Stack>
                                                 </Grid>
                                             )}
@@ -66,7 +66,7 @@ export default function Daily(daily : Daily) {
                                                 <Grid item xs={12} ref={provided.innerRef} {...provided.draggableProps} {...provided.dragHandleProps}>
                                                     <Stack flexDirection='row' sx={{display: "flex", alignItems: 'center'}}>
                                                         <Typography textAlign={'left'} flex={1}>{val.name}</Typography>
-                                                        <IconButton><Cancel/></IconButton>
+                                                        <IconButton color="error"><Cancel/></IconButton>
                                                     </Stack>
                                                 </Grid>
                                             )}

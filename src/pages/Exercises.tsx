@@ -72,51 +72,36 @@ export default function Exercises() {
     const [workoutGroupPage, setWorkoutGroupPage] = useState(1)
     const [weeklyState, setWeeklyState] = useState(initialWeek)
 
-    useEffect(() => {
-        console.log(weeklyState)
-    }, [weeklyState])
-
     const handleDragEnd = (result) => {
         const {source, destination} = result
-        console.log("SOURCE", source)
-        console.log("DESTINATION", destination)
         if (!destination) {
             return;
         }
         
         // ONLY EVER REMOVE FROM THE DAYS BECAUSE NEED EXERCISES TO REMAIN SO CAN BE DRAGGED INTO OTHER DAYS
-        // console.log(source)
         if (source.droppableId.split(" ")[0] === destination.droppableId.split(" ")[0]) {
             if (destination.droppableId.split(" ")[0] === "exercises") {
                 const idSplit = destination.droppableId.split(" ")
                 if (idSplit.length > 1) {
                     // Add element to destination
                     let day = idSplit[1].toLowerCase().trim()
-                    let copyStateDay = JSON.parse(JSON.stringify(weeklyState[day]))
+                    let copyWeek = JSON.parse(JSON.stringify(weeklyState))
                     // day --> day, exercise --> day
                     if (source.droppableId.split(" ").length > 1) {
-                        console.log(1)
                         let sourceDay = source.droppableId.split(" ")[1].toLowerCase()
-                        console.log(sourceDay)
-                        console.log(weeklyState[sourceDay])
-                        copyStateDay["exercises"] = [...copyStateDay["exercises"], JSON.parse(JSON.stringify(weeklyState[sourceDay]["exercises"][source.index]))]
+                        copyWeek[day]["exercises"] = [...copyWeek[day]["exercises"], copyWeek[sourceDay]["exercises"][source.index]]
                     }
                     else {
-                        copyStateDay["exercises"] = [...copyStateDay["exercises"], JSON.parse(JSON.stringify(exercises[source.index]))]
+                        copyWeek[day]["exercises"] = [...copyWeek[day]["exercises"], JSON.parse(JSON.stringify(exercises[source.index]))]
                     }
-                    let weeklyStateCopy = JSON.parse(JSON.stringify(weeklyState))
-                    weeklyStateCopy[day] = copyStateDay
-                    setWeeklyState(weeklyStateCopy)
 
                     // remove from day array
                     if (source.droppableId.split(" ").length > 1) {
                         let sourceDay = source.droppableId.split(" ")[1].toLowerCase()
-                        let copyDayExercise = Array.from(weeklyState[sourceDay]["exercises"])
-                        copyDayExercise.splice(source.index, 1)
-                        let copySourceWeek = JSON.parse(JSON.stringify(weeklyState))
-                        copySourceWeek[sourceDay]["exercises"] = copyDayExercise
-                        setWeeklyState(copySourceWeek)
+                        copyWeek[sourceDay]["exercises"].splice(source.index, 1)
                     }
+
+                    setWeeklyState(copyWeek)
 
                 }
                 else {
@@ -144,29 +129,23 @@ export default function Exercises() {
                     if (idSplit.length > 1) {
                         // Add element to destination
                         let day = idSplit[1].toLowerCase().trim()
-                        let copyStateDay = JSON.parse(JSON.stringify(weeklyState[day]))
+                        let copyWeek = JSON.parse(JSON.stringify(weeklyState))
                         // day --> day, exercise --> day
                         if (source.droppableId.split(" ").length > 1) {
                             let sourceDay = source.droppableId.split(" ")[1].toLowerCase()
-                            copyStateDay["groups"] = [...copyStateDay["groups"], JSON.parse(JSON.stringify(weeklyState[sourceDay]["groups"][source.index]))]
+                            copyWeek[day]["groups"] = [...copyWeek[day]["groups"], copyWeek[sourceDay]["groups"][source.index]]
                         }
                         else {
-                            console.log(workoutGroups[source.index])
-                            copyStateDay["groups"] = [...copyStateDay["groups"], JSON.parse(JSON.stringify(workoutGroups[source.index]))]
+                            copyWeek[day]["groups"] = [...copyWeek[day]["groups"], JSON.parse(JSON.stringify(workoutGroups[source.index]))]
                         }
-                        let weeklyStateCopy = JSON.parse(JSON.stringify(weeklyState))
-                        weeklyStateCopy[day] = copyStateDay
-                        setWeeklyState(weeklyStateCopy)
 
                         // remove from day array
                         if (source.droppableId.split(" ").length > 1) {
                             let sourceDay = source.droppableId.split(" ")[1].toLowerCase()
-                            let copyDayGroups = Array.from(weeklyState[sourceDay]["groups"])
-                            copyDayGroups.splice(source.index, 1)
-                            let copySourceWeek = JSON.parse(JSON.stringify(weeklyState))
-                            copySourceWeek[sourceDay]["groups"] = copyDayGroups
-                            setWeeklyState(copySourceWeek)
+                            copyWeek[sourceDay]["groups"].splice(source.index, 1)
                         }
+
+                        setWeeklyState(copyWeek)
                     }
                 }
                 else {
@@ -355,7 +334,7 @@ export default function Exercises() {
                                     alignContent: 'center',
                                     width: '80%'
                                 }}
-                                count={Math.ceil(exercises.length / 9)} onChange={(_, v) => {console.log(v); setPage(v)}}
+                                count={Math.ceil(exercises.length / 9)} onChange={(_, v) => {setPage(v)}}
                             />
                     }
                     <Pagination
