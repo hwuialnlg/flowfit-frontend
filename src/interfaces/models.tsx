@@ -1,8 +1,7 @@
 interface Exercise {
-    type: string,
-    name: string,
-    weight?: number,
-    time?: string
+    id: number,
+    email: string,
+    exercise_name: string,
 }
 
 interface WorkoutGroup {
