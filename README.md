@@ -1,3 +1,8 @@
+Utilizes hello-pangea/dnd for assigning workout groups + exercises to a weekly schedule
+Tracks progression/growth of exercises and workouts
+Create new workouts and delete new workouts, all customizable
+
+
 # Getting Started with Create React App
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
