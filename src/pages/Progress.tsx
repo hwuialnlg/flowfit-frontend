@@ -1,8 +1,11 @@
 import { Autocomplete, Card, CardContent, CardHeader, Container, Grid, List, ListItem, Pagination, Paper, Skeleton, Stack, TextField, Typography } from "@mui/material";
 import React, { useState } from "react";
+import { useSelector } from "react-redux";
+import { AppState } from "../redux/store";
 
 export default function Progress() {
-    const [exercises, setExercises] = useState(Array<Exercise>())
+    const exercises = useSelector((state: AppState) => state.user.exercises)
+
 
     return (
         <Container
@@ -29,7 +32,7 @@ export default function Progress() {
                 <Autocomplete
                     options={exercises}
                     renderInput={(props) => <TextField {...props} label="Exercise"></TextField>}
-                    getOptionLabel={(option) => option.name}
+                    getOptionLabel={(option) => option.exercise_name}
                     sx={{
                         flex: 1
                     }}
@@ -46,7 +49,7 @@ export default function Progress() {
                                     alignContent: 'center'
                                 }}
                             >
-                                <CardHeader title={val.name}></CardHeader>
+                                <CardHeader title={val.exercise_name}></CardHeader>
                             </Card>
                         )
                     })

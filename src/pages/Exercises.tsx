@@ -13,9 +13,7 @@ export default function Exercises() {
     const exercises = useSelector((state: AppState) => state.user.exercises)
     const weeklyState = useSelector((state: AppState) => state.schedule)
     const groups = useSelector((state : AppState) => state.interface.groups)
-
     
-    const [workoutGroups, setWorkoutGroups] = useState()
     const [filter, setFilter] = useState({} as Exercise)
     const [workoutGroupPage, setWorkoutGroupPage] = useState(1)
     const [page, setPage] = useState(1)
