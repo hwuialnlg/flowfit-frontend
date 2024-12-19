@@ -1,14 +1,26 @@
-import { createSlice } from '@reduxjs/toolkit'
+import { PayloadAction, createSlice } from '@reduxjs/toolkit'
 
-export const userSlice = createSlice({
-  name: 'userSlice',
+interface UserState {
+  username: string | null,
+  email: string | null,
+  dob: Date | null,
+  phone_number: string | null,
+  exercises: Array<Exercise>
+}
 
-  initialState: {
+
+const initialState: UserState = {
     username: null,
     email: null,
     dob: null,
     phone_number: null,
-  },
+    exercises: []
+}
+
+export const userSlice = createSlice({
+  name: 'userSlice',
+
+  initialState,
 
   reducers: {
     setName: (state, action) => {
@@ -27,10 +39,14 @@ export const userSlice = createSlice({
         state.phone_number = action.payload
     },
 
+    setExercises: (state, action: PayloadAction<Array<Exercise>>) => {
+      state.exercises = action.payload
+    }
+
     }
 })
 
 // Action creators are generated for each case reducer function
-export const { setName, setEmail, setDob, setPhoneNumber } = userSlice.actions
+export const { setName, setEmail, setDob, setPhoneNumber, setExercises } = userSlice.actions
 
 export default userSlice.reducer

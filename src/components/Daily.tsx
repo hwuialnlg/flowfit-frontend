@@ -2,8 +2,19 @@ import { Droppable, Draggable } from "@hello-pangea/dnd";
 import { Cancel } from "@mui/icons-material";
 import { Card, CardHeader, CardContent, Grid, Stack, Typography, Button, Divider, Box, IconButton } from "@mui/material";
 import React from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { AppState } from "../redux/store";
+import { setWeekly } from "../redux/slicers/scheduleSlice";
 
-export default function Daily(daily : Daily) {
+interface DailyProps {
+    day: string
+}
+
+export default function Daily({day} : DailyProps) {
+    const dispatch = useDispatch()
+    const daily = useSelector((state: AppState) => state.schedule[day])
+
+
     const removeItem = (idx, type) => {
         let copyWeek = JSON.parse(JSON.stringify(daily.state))
         if (type === "exercises") {
@@ -13,7 +24,7 @@ export default function Daily(daily : Daily) {
             copyWeek[daily.day.toLowerCase()]["groups"].splice(idx, 1)
         }
 
-        daily.setWeeklyState(copyWeek)
+        dispatch(setWeekly(copyWeek))
     }
 
 
@@ -40,11 +51,11 @@ export default function Daily(daily : Daily) {
                             <Grid container>
                                 {
                                     daily.groups?.map((val, idx) => (
-                                        <Draggable key={idx} draggableId={"groups " + val.name + daily.day} index={idx}>
+                                        <Draggable key={idx} draggableId={"groups " + val + daily.day} index={idx}>
                                             {(provided) => (
                                                 <Grid item xs={12} ref={provided.innerRef} {...provided.draggableProps} {...provided.dragHandleProps}>
                                                     <Stack flexDirection='row' sx={{display: "flex", alignItems: 'center'}}>
-                                                        <Typography flex={1} textAlign={'left'}>{val.name}</Typography>
+                                                        <Typography flex={1} textAlign={'left'}>{val}</Typography>
                                                         <IconButton onClick={() => removeItem(idx, "groups")} color="error"><Cancel/></IconButton>
                                                     </Stack>
                                                 </Grid>

@@ -6,10 +6,12 @@ enum ModalOptions {
 
 interface InterfaceState {
     modal : ModalOptions | null
+    groups: Array<string>,
 }
 
 const initialState: InterfaceState = {
-    modal: null
+    modal: null,
+    groups: []
 }
 
 export const interfaceSlice = createSlice({
@@ -22,10 +24,13 @@ export const interfaceSlice = createSlice({
             state.modal = action.payload
         },
 
+        setGroups: (state, action : PayloadAction<Array<string>>) => {
+            state.groups = action.payload
+        }
     }
 })
 
 // Action creators are generated for each case reducer function
-export const { setModal, } = interfaceSlice.actions
+export const { setModal, setGroups} = interfaceSlice.actions
 
 export default interfaceSlice.reducer
