@@ -25,8 +25,8 @@ const initialState: WeeklyState = {
     sunday: null,
 }
 
-export const interfaceSlice = createSlice({
-    name: 'interfaceSlice',
+export const scheduleSlice = createSlice({
+    name: 'scheduleSlice',
     
     initialState,
 
@@ -63,6 +63,6 @@ export const interfaceSlice = createSlice({
 })
 
 // Action creators are generated for each case reducer function
-export const { setModal, } = interfaceSlice.actions
+export const { setMonday, setTuesday, setWednesday, setThursday, setFriday, setSaturday, setSunday } = scheduleSlice.actions
 
-export default interfaceSlice.reducer
+export default scheduleSlice.reducer
