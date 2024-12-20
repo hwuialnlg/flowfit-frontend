@@ -49,10 +49,10 @@ export default function Home() {
                     multiple
                     options={["Gym", "Weight", "Exercise"]}
                />
-                <InfoDisplay name="Weight" color={"#91C4F2"}/>
-                <InfoDisplay name="Gym" color={"#8CA0D7"}/>
-                <InfoDisplay name="Exercise" color={"#9D79BC"}/>
-                <InfoDisplay name="Exercise" color={"#A14DA0"}/>
+                <InfoDisplay name="Weight" color={"#D3E9F3"}/>
+                <InfoDisplay name="Gym" color={"#D6DBF0"}/>
+                <InfoDisplay name="Exercise" color={"#C9BCD2"}/>
+                <InfoDisplay name="Exercise" color={"#F3DFEF"}/>
             </Stack>
         </Container>
     )
