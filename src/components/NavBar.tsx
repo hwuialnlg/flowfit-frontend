@@ -1,12 +1,13 @@
 import React, { useState } from "react";
-import Box from '@mui/material/Box';
 import { AppBar, Button, Divider, IconButton, Menu, MenuItem, Stack, Toolbar, Typography } from "@mui/material";
 import { useLocation, useNavigate } from "react-router";
-import { Person } from "@mui/icons-material"
+import { Person } from "@mui/icons-material";
+import { setIsLoggedIn } from "../redux/slicers/userSlice.ts";
+import { useDispatch, useSelector } from "react-redux";
+import { AppState } from "../redux/store";
 
 export default function NavBar() {
     const navigate = useNavigate();
-    const location = useLocation()
     const [pages, setPages] = useState(["Dashboard", "Exercises", "Progress"])
     const [open, setOpen] = useState(false)
     const [anchorEl, setAnchorEl] = useState<null | HTMLElement>()
@@ -15,6 +16,9 @@ export default function NavBar() {
         setOpen(!open)
         setAnchorEl(null)
     }
+    
+    const dispatch = useDispatch()
+    const isLoggedIn = useSelector((state: AppState) => state.user.isLoggedIn)
 
     return (
         <AppBar position={'static'}>
@@ -38,44 +42,39 @@ export default function NavBar() {
                         FlowFit
                     </Typography>
                     
-                    <Divider orientation='vertical' flexItem></Divider>
+                    {
+                        isLoggedIn &&
+                            <Divider orientation='vertical' flexItem></Divider>
+                    }
 
                     {
-                        pages.map((page) => {
-                            return (
-                                <Typography 
-                                    sx={{
-                                        '&:hover': {
-                                            backgroundColor: '#1B70C9',
-                                        },
-                                    }} 
-                                    onClick={() => navigate(`/${page.toLowerCase()}`)} 
-                                    alignContent={'center'} 
-                                    textAlign={'center'}
-                                >{page}
-                                </Typography>
-                            )
-                        })
+                        isLoggedIn &&
+                            pages.map((page) => {
+                                return (
+                                    <Typography 
+                                        sx={{
+                                            '&:hover': {
+                                                backgroundColor: '#1B70C9',
+                                            },
+                                        }} 
+                                        onClick={() => navigate(`/${page.toLowerCase()}`)} 
+                                        alignContent={'center'} 
+                                        textAlign={'center'}
+                                    >{page}
+                                    </Typography>
+                                )
+                            })
                     }
                 </Stack>
-
-
-                <Stack
-                    sx={{
-                        display: 'flex',
-                        flexDirection: 'row'
-                    }}
-                >
-                    <Button variant='contained' onClick={() => navigate("/login")}>
-                        Login
-                    </Button>
                     
-                    <IconButton edge='end'
-                        onClick={(e) =>  {setOpen(true); setAnchorEl(e.currentTarget)}}
-                    >
-                        <Person/>
-                    </IconButton>
-                </Stack>
+                {
+                    isLoggedIn && 
+                        <IconButton edge='end'
+                            onClick={(e) =>  {setOpen(true); setAnchorEl(e.currentTarget)}}
+                        >
+                            <Person/>
+                        </IconButton>
+                }
 
                 <Menu
                     open={open}
@@ -83,7 +82,13 @@ export default function NavBar() {
                     anchorEl={anchorEl}
                 >
                     <MenuItem onClick={() => {handleClose(); navigate('/profile')}}>Profile</MenuItem>
-                    <MenuItem>Sign out</MenuItem>
+                    <MenuItem 
+                        onClick={() => {
+                            localStorage.removeItem("jwt")
+                            dispatch(setIsLoggedIn(false))
+                            navigate('/login')
+                        }}
+                    >Sign out</MenuItem>
                 </Menu>
             </Toolbar>
         </AppBar>
