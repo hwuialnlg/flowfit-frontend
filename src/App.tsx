@@ -15,24 +15,10 @@ import { AppState } from './redux/store.ts';
 
 export default function App() {
     const isLoggedIn = useSelector((state: AppState) => state.user.isLoggedIn)
-    const dispatch = useDispatch()
 
     useEffect(() => {
         // LOAD UP USER STATES AND DATA, PASS WITH CONTEXT
-        checkToken()
     }, [])
-
-    const checkToken = () => {
-        let token = localStorage.getItem("jwt")
-        if (token) {
-            axios.post("/validateToken", token).then((res) => {
-                dispatch(setIsLoggedIn(true))
-                localStorage.setItem("jwt", res.data["access_token"])
-            }).catch((err) => {
-                console.log(err)
-            })
-        }
-    }
 
     return (
         <BrowserRouter>

@@ -3,7 +3,7 @@ import { Apple, Google } from "@mui/icons-material";
 import { Button, Card, CardContent, Checkbox, Divider, FormControlLabel, TextField, Typography } from "@mui/material";
 import { Container, Stack } from "@mui/system";
 import axios from "axios";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
 import { setIsLoggedIn } from "../redux/slicers/userSlice.ts";
 import { useNavigate } from "react-router";
@@ -38,6 +38,23 @@ export default function Login() {
         }).finally(() => {
             cleanUp()
         })
+    }
+
+    useEffect(() => {
+        // LOAD UP USER STATES AND DATA, PASS WITH CONTEXT
+        checkToken()
+    }, [])
+
+    const checkToken = () => {
+        let token = localStorage.getItem("jwt")
+        if (token) {
+            axios.post("http://localhost:8080/validateToken?token=" + token).then((res) => {
+                dispatch(setIsLoggedIn(true))
+                navigate("/")
+            }).catch((err) => {
+                console.log(err)
+            })
+        }
     }
 
     return (
