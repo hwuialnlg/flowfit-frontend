@@ -1,5 +1,11 @@
 import { PayloadAction, createSlice } from '@reduxjs/toolkit'
 
+interface Exercise {
+  id: number,
+  email: string,
+  exercise_name: string,
+}
+
 interface UserState {
   username: string | null,
   email: string | null,
