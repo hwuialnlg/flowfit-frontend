@@ -1,20 +1,22 @@
 import { PayloadAction, createSlice } from '@reduxjs/toolkit'
 
+
 interface UserState {
   username: string | null,
   email: string | null,
   dob: Date | null,
   phone_number: string | null,
   exercises: Array<Exercise>
+  isLoggedIn: boolean,
 }
-
 
 const initialState: UserState = {
     username: null,
     email: null,
     dob: null,
     phone_number: null,
-    exercises: []
+    exercises: [],
+    isLoggedIn: false,
 }
 
 export const userSlice = createSlice({
@@ -41,12 +43,16 @@ export const userSlice = createSlice({
 
     setExercises: (state, action: PayloadAction<Array<Exercise>>) => {
       state.exercises = action.payload
+    },
+
+    setIsLoggedIn: (state, action: PayloadAction<boolean>) => {
+      state.isLoggedIn = action.payload
     }
 
     }
 })
 
 // Action creators are generated for each case reducer function
-export const { setName, setEmail, setDob, setPhoneNumber, setExercises } = userSlice.actions
+export const { setName, setEmail, setDob, setPhoneNumber, setExercises, setIsLoggedIn } = userSlice.actions
 
 export default userSlice.reducer
