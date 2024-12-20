@@ -4,7 +4,7 @@ import { Card, CardHeader, CardContent, Grid, Stack, Typography, Button, Divider
 import React from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { AppState } from "../redux/store";
-import { setWeekly } from "../redux/slicers/scheduleSlice";
+import { setWeekly } from "../redux/slicers/scheduleSlice.ts";
 
 interface DailyProps {
     day: string
@@ -12,16 +12,15 @@ interface DailyProps {
 
 export default function Daily({day} : DailyProps) {
     const dispatch = useDispatch()
-    const daily = useSelector((state: AppState) => state.schedule[day])
-
+    const daily = useSelector((state: AppState) => state.schedule[day.toLowerCase()])
 
     const removeItem = (idx, type) => {
         let copyWeek = JSON.parse(JSON.stringify(daily.state))
         if (type === "exercises") {
-            copyWeek[daily.day.toLowerCase()]["exercises"].splice(idx, 1)
+            copyWeek[day.toLowerCase()]["exercises"].splice(idx, 1)
         }
         else {
-            copyWeek[daily.day.toLowerCase()]["groups"].splice(idx, 1)
+            copyWeek[day.toLowerCase()]["groups"].splice(idx, 1)
         }
 
         dispatch(setWeekly(copyWeek))
@@ -30,13 +29,13 @@ export default function Daily({day} : DailyProps) {
 
     return (
         <Card sx={{display: 'flex', flexDirection: 'column', flex: 1, height: '80%'}}>
-            <CardHeader title={<Typography textAlign={'center'}>{daily.day}</Typography>}
+            <CardHeader title={<Typography textAlign={'center'}>{day}</Typography>}
                 sx={{
                     backgroundColor: "#4BC5EB"
                 }}
             />
                 {/* Accepts only interfaces of type WorkoutGroup */}
-                <Droppable droppableId={"groups " + daily.day.toLowerCase()}>
+                <Droppable droppableId={"groups " + day.toLowerCase()}>
                     {(provided) => (
                         <CardContent
                             ref={provided.innerRef} 
@@ -51,7 +50,7 @@ export default function Daily({day} : DailyProps) {
                             <Grid container>
                                 {
                                     daily.groups?.map((val, idx) => (
-                                        <Draggable key={idx} draggableId={"groups " + val + daily.day} index={idx}>
+                                        <Draggable key={idx} draggableId={"groups " + val + day} index={idx}>
                                             {(provided) => (
                                                 <Grid item xs={12} ref={provided.innerRef} {...provided.draggableProps} {...provided.dragHandleProps}>
                                                     <Stack flexDirection='row' sx={{display: "flex", alignItems: 'center'}}>
@@ -72,7 +71,7 @@ export default function Daily({day} : DailyProps) {
                 <Divider orientation='horizontal' flexItem></Divider>
 
                 {/* Accepts only interfaces of type Exercise */}
-                <Droppable droppableId={"exercises " + daily.day.toLowerCase()}>
+                <Droppable droppableId={"exercises " + day.toLowerCase()}>
                     {(provided) => (
                         <CardContent
                             ref={provided.innerRef} {...provided.droppableProps}
@@ -85,7 +84,7 @@ export default function Daily({day} : DailyProps) {
                             <Grid container>
                                 {
                                     daily.exercises?.map((val, idx) => (
-                                        <Draggable key={idx} draggableId={"exercises " + val.name + daily.day} index={idx}>
+                                        <Draggable key={idx} draggableId={"exercises " + val.name + day} index={idx}>
                                             {(provided) => (
                                                 <Grid item xs={12} ref={provided.innerRef} {...provided.draggableProps} {...provided.dragHandleProps}>
                                                     <Stack flexDirection='row' sx={{display: "flex", alignItems: 'center'}}>

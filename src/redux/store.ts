@@ -1,7 +1,7 @@
 import { configureStore } from '@reduxjs/toolkit'
-import userReducer from './slicers/userSlice'
-import interfaceReducer from './slicers/interfaceSlice'
-import scheduleReducer from './slicers/scheduleSlice'
+import userReducer from './slicers/userSlice.ts'
+import interfaceReducer from './slicers/interfaceSlice.ts'
+import scheduleReducer from './slicers/scheduleSlice.ts'
 
 const store = configureStore({
   reducer: {
