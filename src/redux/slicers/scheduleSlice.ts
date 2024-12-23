@@ -6,8 +6,13 @@ interface Exercise {
     exercise_name: string,
 }
 
+interface Group {
+    id: number,
+    name: string,
+}
+
 interface DailyState {
-    groups: Array<string>,
+    groups: Array<Group>,
     exercises: Array<Exercise>,
 }
 

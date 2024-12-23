@@ -1,14 +1,20 @@
 import { Droppable, Draggable } from "@hello-pangea/dnd";
 import { Cancel } from "@mui/icons-material";
-import { Card, CardHeader, CardContent, Grid, Stack, Typography, Button, Divider, Box, IconButton } from "@mui/material";
-import React from "react";
+import { Card, CardHeader, CardContent, Grid, Stack, Typography, Divider, IconButton } from "@mui/material";
+import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { AppState } from "../redux/store";
 import { setWeekly } from "../redux/slicers/scheduleSlice.ts";
 import axios from "axios";
+import { Exercise, Group } from "../interfaces/models.tsx";
 
 interface DailyProps {
     day: string
+}
+
+interface DailyState {
+    groups: Array<Group>,
+    exercises: Array<Exercise>,
 }
 
 export default function Daily({day} : DailyProps) {
@@ -25,7 +31,6 @@ export default function Daily({day} : DailyProps) {
         else {
             removed = copyWeek[day.toLowerCase()]["groups"].splice(idx, 1)
         }
-        console.log(removed)
         var data = {
             day: day.toLowerCase(),
             exercise_id: type === "exercises" ? removed[0].id : null,
@@ -77,12 +82,12 @@ export default function Daily({day} : DailyProps) {
                         
                             <Grid container>
                                 {
-                                    daily.groups?.map((val, idx) => (
-                                        <Draggable key={idx} draggableId={"groups " + val + day} index={idx}>
+                                    daily?.groups?.map((val, idx) => (
+                                        <Draggable key={idx} draggableId={"groups " + val.id + day} index={idx}>
                                             {(provided) => (
                                                 <Grid item xs={12} ref={provided.innerRef} {...provided.draggableProps} {...provided.dragHandleProps}>
                                                     <Stack flexDirection='row' sx={{display: "flex", alignItems: 'center'}}>
-                                                        <Typography flex={1} textAlign={'left'}>{val}</Typography>
+                                                        <Typography flex={1} textAlign={'left'}>{capitalize(val.name)}</Typography>
                                                         <IconButton onClick={() => removeItem(idx, "groups")} color="error"><Cancel/></IconButton>
                                                     </Stack>
                                                 </Grid>
@@ -111,7 +116,7 @@ export default function Daily({day} : DailyProps) {
                         >
                             <Grid container>
                                 {
-                                    daily.exercises?.map((val, idx) => (
+                                    daily?.exercises?.map((val, idx) => (
                                         <Draggable key={idx} draggableId={"exercises " + val.exercise_id + day} index={idx}>
                                             {(provided) => (
                                                 <Grid item xs={12} ref={provided.innerRef} {...provided.draggableProps} {...provided.dragHandleProps}>

@@ -6,12 +6,18 @@ interface Exercise {
   exercise_name: string,
 }
 
+interface Group {
+  id: number,
+  name: string
+}
+
 interface UserState {
   username: string | null,
   email: string | null,
   dob: Date | null,
   phone_number: string | null,
   exercises: Array<Exercise>
+  groups: Array<Group>
   isLoggedIn: boolean,
 }
 
@@ -21,6 +27,7 @@ const initialState: UserState = {
     dob: null,
     phone_number: null,
     exercises: [],
+    groups: [],
     isLoggedIn: false,
 }
 
@@ -52,12 +59,16 @@ export const userSlice = createSlice({
 
     setIsLoggedIn: (state, action: PayloadAction<boolean>) => {
       state.isLoggedIn = action.payload
+    },
+
+    setGroups: (state, action : PayloadAction<Array<Group>>) => {
+        state.groups = action.payload
     }
 
     }
 })
 
 // Action creators are generated for each case reducer function
-export const { setName, setEmail, setDob, setPhoneNumber, setExercises, setIsLoggedIn } = userSlice.actions
+export const { setName, setEmail, setDob, setPhoneNumber, setExercises, setIsLoggedIn, setGroups } = userSlice.actions
 
 export default userSlice.reducer

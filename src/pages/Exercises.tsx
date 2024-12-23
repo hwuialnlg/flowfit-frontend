@@ -16,7 +16,7 @@ export default function Exercises() {
 
     const exercises = useSelector((state: AppState) => state.user.exercises)
     const weeklyState = useSelector((state: AppState) => state.schedule)
-    const groups = useSelector((state : AppState) => state.interface.groups)
+    const groups = useSelector((state : AppState) => state.user.groups)
     
     const [filter, setFilter] = useState({} as Exercise)
     const [workoutGroupPage, setWorkoutGroupPage] = useState(1)
@@ -58,7 +58,7 @@ export default function Exercises() {
             
             if (from) {
                 console.log(weeklyStateCopy)
-                removeDaily("exercise", from, obj, weeklyStateCopy)
+                removeDaily(type, from, obj, weeklyStateCopy)
             }
 
             else {
@@ -117,10 +117,8 @@ export default function Exercises() {
             if (destination.droppableId.split(" ")[0] === "exercises") {
                 const idSplit = destination.droppableId.split(" ")
                 if (idSplit.length > 1) {
-                    // Add element to destination
                     let day = idSplit[1].toLowerCase().trim()
                     let copyWeek = JSON.parse(JSON.stringify(weeklyState))
-                    // day --> day, exercise --> day
                     if (source.droppableId.split(" ").length > 1) {
                         let sourceDay = source.droppableId.split(" ")[1].toLowerCase()
                         copyWeek[day]["exercises"] = [...copyWeek[day]["exercises"], copyWeek[sourceDay]["exercises"][source.index]]
@@ -130,16 +128,6 @@ export default function Exercises() {
                         copyWeek[day]["exercises"] = [...copyWeek[day]["exercises"], JSON.parse(JSON.stringify(exercises[source.index]))]
                         addDaily("exercise", day, JSON.parse(JSON.stringify(exercises[source.index])))
                     }
-
-                    // remove from day array
-                    // if (source.droppableId.split(" ").length > 1) {
-                    //     let sourceDay = source.droppableId.split(" ")[1].toLowerCase()
-                    //     let removedObjArr = copyWeek[sourceDay]["exercises"].splice(source.index, 1)
-                    //     removeDaily("exercise", sourceDay, removedObjArr[0])
-                    // }
-
-                    // setWeeklyState(copyWeek)
-                    // dispatch(setWeekly(copyWeek))
                 }
                 else {
                     // day --> exercise, exercise --> exercise
@@ -150,8 +138,7 @@ export default function Exercises() {
                         copyDayExercise.splice(source.index, 1)
                         let copySourceWeek = JSON.parse(JSON.stringify(weeklyState))
                         copySourceWeek[sourceDay]["exercises"] = copyDayExercise
-                        // setWeeklyState(copySourceWeek)
-                        dispatch(setWeekly(copySourceWeek))
+                        removeDaily("exercise", sourceDay, copyDayExercise)
                     }
                     else {
                         return;
@@ -172,19 +159,12 @@ export default function Exercises() {
                         if (source.droppableId.split(" ").length > 1) {
                             let sourceDay = source.droppableId.split(" ")[1].toLowerCase()
                             copyWeek[day]["groups"] = [...copyWeek[day]["groups"], copyWeek[sourceDay]["groups"][source.index]]
+                            addDaily("group", day, copyWeek[sourceDay]["groups"][source.index], sourceDay)
                         }
                         else {
                             copyWeek[day]["groups"] = [...copyWeek[day]["groups"], JSON.parse(JSON.stringify(groups[source.index]))]
+                            addDaily("group", day, JSON.parse(JSON.stringify(groups[source.index])))
                         }
-
-                        // remove from day array
-                        if (source.droppableId.split(" ").length > 1) {
-                            let sourceDay = source.droppableId.split(" ")[1].toLowerCase()
-                            copyWeek[sourceDay]["groups"].splice(source.index, 1)
-                        }
-
-                        // setWeeklyState(copyWeek)
-                        dispatch(setWeekly(copyWeek))
                     }
                 }
                 else {
@@ -194,8 +174,7 @@ export default function Exercises() {
                         copyDayGroups.splice(source.index, 1)
                         let copySourceWeek = JSON.parse(JSON.stringify(weeklyState))
                         copySourceWeek[sourceDay]["groups"] = copyDayGroups
-                        // setWeeklyState(copySourceWeek)
-                        dispatch(setWeekly(copySourceWeek))
+                        removeDaily("group", sourceDay, copyDayGroups)
                     }
                 }
             }
@@ -274,7 +253,7 @@ export default function Exercises() {
                         
                         <Droppable droppableId="exercises" direction="vertical"
                             renderClone={(provided, _, rubric) => (
-                                <Typography textAlign={'center'} ref={provided.innerRef} {...provided.dragHandleProps} {...provided.draggableProps}>{exercises[rubric.source.index].exercise_name}</Typography>
+                                <Typography textAlign={'center'} ref={provided.innerRef} {...provided.dragHandleProps} {...provided.draggableProps}>{capitalize(exercises[rubric.source.index].exercise_name)}</Typography>
                             )}
                         
                         >
@@ -338,6 +317,8 @@ export default function Exercises() {
                     <Stack width={'30%'} rowGap={3}>
                         <Autocomplete
                             options={groups}
+                            getOptionLabel={(option) => capitalize(option.name)}
+                            isOptionEqualToValue={(option, value) => value.name.toLowerCase().trim().includes(option.name.toLowerCase().trim())}
                             renderInput={(props) => <TextField {...props} label="Workout Group"></TextField>}
                         />
                         <Droppable droppableId={"groups"}>
@@ -350,11 +331,11 @@ export default function Exercises() {
                                     {
                                         groups?.slice((workoutGroupPage - 1) * 3, Math.min(workoutGroupPage * 3, groups.length)).map((val, idx) => {
                                             return (
-                                                <Draggable draggableId={"groups " + val} index={idx}>
+                                                <Draggable draggableId={"groups " + val.id} index={idx}>
                                                     {(provided) => (
                                                         <Grid item xs={12} key={idx} {...provided.dragHandleProps} {...provided.draggableProps} ref={provided.innerRef}>
                                                             <Card sx={{borderRadius: 0}}>
-                                                                <CardHeader title={<Typography textAlign={'center'}>{val}</Typography>}></CardHeader>
+                                                                <CardHeader title={<Typography textAlign={'center'}>{capitalize(val.name)}</Typography>}></CardHeader>
                                                             </Card>
                                                         </Grid>
                                                     )}

@@ -4,8 +4,8 @@ export interface Exercise {
     exercise_name: string,
 }
 
-export interface WorkoutGroup {
-    type: string,
+export interface Group {
+    id: number,
     name: string,
 }
 

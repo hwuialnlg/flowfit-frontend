@@ -13,7 +13,7 @@ import { AppState } from './redux/store.ts';
 import axios from 'axios';
 import { setWeekly } from './redux/slicers/scheduleSlice.ts';
 import { setExercises } from './redux/slicers/userSlice.ts';
-import { setGroups } from './redux/slicers/interfaceSlice.ts';
+import { setGroups } from './redux/slicers/userSlice.ts';
 
 export default function App() {
     const isLoggedIn = useSelector((state: AppState) => state.user.isLoggedIn)
@@ -49,6 +49,7 @@ export default function App() {
                 headers: {Authorization: `Bearer ${localStorage.getItem("jwt")}`}
             }
         ).then((res) => {
+            console.log(res.data)
             dispatch(setWeekly(res.data))
         }).catch((err) => {
             console.log("App failed to grab weekly schedule", err)
@@ -64,6 +65,7 @@ export default function App() {
             getUserProfileInfo()
             getExercises()
             getWeekly()
+            getGroups()
             // Get stats
         }
         // LOAD UP USER STATES AND DATA, PASS WITH CONTEXT
