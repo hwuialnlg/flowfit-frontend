@@ -8,7 +8,7 @@ import { AppState } from "../redux/store.ts";
 import { setWeekly } from "../redux/slicers/scheduleSlice.ts";
 import CreateExercise from "../modals/CreateExercise.tsx";
 import { setModal, ModalOptions } from "../redux/slicers/interfaceSlice.ts";
-import { Exercise } from '../interfaces/models.tsx'
+import { Exercise, Group } from '../interfaces/models.tsx'
 import axios from "axios";
 
 export default function Exercises() {
@@ -19,6 +19,7 @@ export default function Exercises() {
     const groups = useSelector((state : AppState) => state.user.groups)
     
     const [filter, setFilter] = useState({} as Exercise)
+    const [workoutFilter, setWorkoutFilter] = useState({} as Group)
     const [workoutGroupPage, setWorkoutGroupPage] = useState(1)
     const [page, setPage] = useState(1)
 
@@ -35,7 +36,10 @@ export default function Exercises() {
         if (filter) {
             setPage(1)
         }
-    }, [filter])
+        if (workoutFilter) {
+            setPage(1)
+        }
+    }, [filter, workoutFilter])
 
     const addDaily = (type: string, day: string, obj: any, from = null) => {
 
@@ -317,6 +321,7 @@ export default function Exercises() {
                     <Stack width={'30%'} rowGap={3}>
                         <Autocomplete
                             options={groups}
+                            onChange={(e, v) => (v === null ? setWorkoutFilter({} as Group) : setWorkoutFilter(v))}
                             getOptionLabel={(option) => capitalize(option.name)}
                             isOptionEqualToValue={(option, value) => value.name.toLowerCase().trim().includes(option.name.toLowerCase().trim())}
                             renderInput={(props) => <TextField {...props} label="Workout Group"></TextField>}
@@ -329,7 +334,7 @@ export default function Exercises() {
                                     ref={provided.innerRef}
                                 >
                                     {
-                                        groups?.slice((workoutGroupPage - 1) * 3, Math.min(workoutGroupPage * 3, groups.length)).map((val, idx) => {
+                                        groups?.filter((v) => workoutFilter?.id > 0 ? workoutFilter.name === v.name : true).slice((workoutGroupPage - 1) * 3, Math.min(workoutGroupPage * 3, groups.length)).map((val, idx) => {
                                             return (
                                                 <Draggable draggableId={"groups " + val.id} index={idx}>
                                                     {(provided) => (
