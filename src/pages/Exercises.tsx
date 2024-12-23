@@ -1,5 +1,5 @@
-import { Autocomplete, Card, CardHeader, Container, Grid, IconButton, Pagination, Paper, Stack, TextField, Tooltip, Typography } from "@mui/material";
-import React, { useState } from "react";
+import { Autocomplete, Card, CardHeader, Container, Grid, IconButton, Pagination, Paper, Stack, TextField, Tooltip, Typography, imageListClasses } from "@mui/material";
+import React, { useEffect, useState } from "react";
 import { Add } from "@mui/icons-material";
 import { DragDropContext, Draggable, Droppable } from "@hello-pangea/dnd";
 import Daily from "../components/Daily.tsx";
@@ -8,6 +8,8 @@ import { AppState } from "../redux/store.ts";
 import { setWeekly } from "../redux/slicers/scheduleSlice.ts";
 import CreateExercise from "../modals/CreateExercise.tsx";
 import { setModal, ModalOptions } from "../redux/slicers/interfaceSlice.ts";
+import { Exercise } from '../interfaces/models.tsx'
+import axios from "axios";
 
 export default function Exercises() {
     const dispatch = useDispatch()
@@ -19,6 +21,72 @@ export default function Exercises() {
     const [filter, setFilter] = useState({} as Exercise)
     const [workoutGroupPage, setWorkoutGroupPage] = useState(1)
     const [page, setPage] = useState(1)
+    const [requests, setRequests] = useState([])
+
+    const capitalize = (word: string) => {
+        let wordArr = word.split(" ")
+        for (let i = 0; i < wordArr.length; i++) {
+            let wordCopy = wordArr[i].slice()
+            wordArr[i] = wordCopy[0].toUpperCase() + wordCopy.substring(1)
+        }
+        return wordArr.join(" ").trim()
+    }
+
+    useEffect(() => {
+        if (filter) {
+            setPage(1)
+        }
+    }, [filter])
+
+    const addDaily = (type: string, day: string, obj: any) => {
+
+        var data = {
+            "day": day,
+            "exercise_id": (type === "exercise" ? obj.id : null), 
+            "group_id": (type === "exercise" ? null : obj.id),
+        }
+
+        axios.post(`http://localhost:8080/add${type === "exercise" ? "Exercise" : "Group"}ToDaily`,
+            data,
+            {
+                headers: {
+                    Authorization: `Bearer ${localStorage.getItem("jwt")}`
+                }
+            }
+        ).then((res) => {
+            let weeklyStateCopy = JSON.parse(JSON.stringify(weeklyState))
+            weeklyStateCopy[day][(type === "exercise" ? "exercises" : "groups")] = [...weeklyStateCopy[day][(type === "exercise" ? "exercises" : "groups")], obj]
+            dispatch(setWeekly(weeklyStateCopy))
+        }).catch((err) => {
+            console.log("Unable to update daily", err)
+        })
+    }
+
+    const removeDaily = (type: string, day: string, obj: any) => {
+        let copy = JSON.parse(JSON.stringify(obj))
+
+        var data = {
+            "day": day,
+            "exercise_id": (type === "exercise" ? copy.id : null), 
+            "group_id": (type === "exercise" ? null : copy.id),
+        }
+
+        axios.post(`http://localhost:8080/remove${type === "exercise" ? "Exercise" : "Group"}ToDaily`,
+            data,
+            {
+                headers: {
+                    Authorization: `Bearer ${localStorage.getItem("jwt")}`
+                }
+            }
+        ).then((res) => {
+            let weeklyStateCopy = JSON.parse(JSON.stringify(weeklyState))
+            let removeIdx = weeklyStateCopy[day][(type === "exercise" ? "exercises" : "groups")].findIndex(copy)
+            weeklyStateCopy[day][(type === "exercise" ? "exercises" : "groups")].splice(removeIdx, 1)
+            dispatch(setWeekly(weeklyStateCopy))
+        }).catch((err) => {
+            console.log("Unable to update daily", err)
+        })
+    }
 
     const handleDragEnd = (result) => {
         const {source, destination} = result
@@ -38,20 +106,22 @@ export default function Exercises() {
                     if (source.droppableId.split(" ").length > 1) {
                         let sourceDay = source.droppableId.split(" ")[1].toLowerCase()
                         copyWeek[day]["exercises"] = [...copyWeek[day]["exercises"], copyWeek[sourceDay]["exercises"][source.index]]
+                        addDaily("exercise", day, copyWeek[sourceDay]["exercises"][source.index])
                     }
                     else {
                         copyWeek[day]["exercises"] = [...copyWeek[day]["exercises"], JSON.parse(JSON.stringify(exercises[source.index]))]
+                        addDaily("exercise", day, exercises[source.index])
                     }
 
                     // remove from day array
                     if (source.droppableId.split(" ").length > 1) {
                         let sourceDay = source.droppableId.split(" ")[1].toLowerCase()
-                        copyWeek[sourceDay]["exercises"].splice(source.index, 1)
+                        let removedObjArr = copyWeek[sourceDay]["exercises"].splice(source.index, 1)
+                        removeDaily("exercise", sourceDay, removedObjArr[0])
                     }
 
                     // setWeeklyState(copyWeek)
-                    dispatch(setWeekly(copyWeek))
-
+                    // dispatch(setWeekly(copyWeek))
                 }
                 else {
                     // day --> exercise, exercise --> exercise
@@ -170,10 +240,10 @@ export default function Exercises() {
                                     width: '100%'
                                 }}
                                 // value={filter}
-                                // onChange={(e, v) => (v === null ? setFilter("") : setFilter(String(v)))}
+                                onChange={(e, v) => (v === null ? setFilter({} as Exercise) : setFilter(v))}
                                 renderInput={(props) => <TextField {...props} label={"Exercises"}></TextField>}
                                 options={exercises}
-                                getOptionLabel={(option) => option.exercise_name}
+                                getOptionLabel={(option) => capitalize(option.exercise_name)}
                                 isOptionEqualToValue={(option, value) => option.exercise_name.toLowerCase().trim().includes(value.exercise_name.toLowerCase().trim())}
                             />
                             <Tooltip title={"Add Exercise"}>
@@ -203,7 +273,7 @@ export default function Exercises() {
                                 >
                                     
                                     {
-                                        exercises.slice((page - 1) * 6, Math.min(6 * page, exercises.length)).map((val, idx) => {
+                                        exercises.filter((v) => filter?.id > 0 ? filter.exercise_name === v.exercise_name : true).slice((page - 1) * 3, Math.min(3 * page, exercises.length)).map((val, idx) => {
                                             return (
                                                 <Draggable index={idx} key={idx} draggableId={"exercises " + val.exercise_name}>
                                                     {(provided, snapshot) => (
@@ -218,7 +288,7 @@ export default function Exercises() {
                                                             }}
                                                         >
                                                             <Card sx={{borderRadius: 0}} elevation={1}>
-                                                                <CardHeader title={<Typography textAlign={'center'}>{val.exercise_name}</Typography>}></CardHeader>
+                                                                <CardHeader title={<Typography textAlign={'center'}>{capitalize(val.exercise_name)}</Typography>}></CardHeader>
                                                             </Card>
                                                             {
                                                                 snapshot.isDragging ?? <Typography>{val.exercise_name}</Typography>
@@ -240,9 +310,9 @@ export default function Exercises() {
                                         display: 'flex',
                                         justifyContent: 'center',
                                         alignContent: 'center',
-                                        width: '100%'
+                                        width: '100%',
                                     }}
-                                    count={Math.ceil(exercises.length / 6)} onChange={(_, v) => {setPage(v)}}
+                                    count={Math.ceil(exercises.length / 3)} onChange={(_, v) => {setPage(v)}}
                                 />
                         }
                     </Stack>
@@ -259,7 +329,7 @@ export default function Exercises() {
                                     ref={provided.innerRef}
                                 >
                                     {
-                                        groups.slice((workoutGroupPage - 1) * 6, Math.min(workoutGroupPage * 6, groups.length)).map((val, idx) => {
+                                        groups?.slice((workoutGroupPage - 1) * 3, Math.min(workoutGroupPage * 3, groups.length)).map((val, idx) => {
                                             return (
                                                 <Draggable draggableId={"groups " + val} index={idx}>
                                                     {(provided) => (
@@ -284,7 +354,7 @@ export default function Exercises() {
                                 alignContent: 'center',
                                 width: '100%',
                             }}
-                            count={Math.ceil(groups.length / 6)} onChange={(_, v) => setWorkoutGroupPage(v)}
+                            count={Math.ceil(groups.length / 3)} onChange={(_, v) => setWorkoutGroupPage(v)}
                         />
                     </Stack>
                 </Stack>

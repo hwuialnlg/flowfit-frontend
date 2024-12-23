@@ -5,6 +5,7 @@ import React from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { AppState } from "../redux/store";
 import { setWeekly } from "../redux/slicers/scheduleSlice.ts";
+import axios from "axios";
 
 interface DailyProps {
     day: string
@@ -13,19 +14,46 @@ interface DailyProps {
 export default function Daily({day} : DailyProps) {
     const dispatch = useDispatch()
     const daily = useSelector((state: AppState) => state.schedule[day.toLowerCase()])
+    const weekly = useSelector((state: AppState) => state.schedule)
 
     const removeItem = (idx, type) => {
-        let copyWeek = JSON.parse(JSON.stringify(daily.state))
+        let copyWeek = JSON.parse(JSON.stringify(weekly))
+        let removed;
         if (type === "exercises") {
-            copyWeek[day.toLowerCase()]["exercises"].splice(idx, 1)
+            removed = copyWeek[day.toLowerCase()]["exercises"].splice(idx, 1)
         }
         else {
-            copyWeek[day.toLowerCase()]["groups"].splice(idx, 1)
+            removed = copyWeek[day.toLowerCase()]["groups"].splice(idx, 1)
+        }
+        console.log(removed)
+        var data = {
+            day: day.toLowerCase(),
+            exercise_id: type === "exercises" ? removed[0].id : null,
+            group_id: type === "exercises" ? null : removed[0].id
         }
 
-        dispatch(setWeekly(copyWeek))
+        axios.post(`http://localhost:8080/remove${(type === "exercises" ? "Exercise" : "Group")}FromDaily`,
+            data,
+            {
+                headers: {
+                    Authorization: `Bearer ${localStorage.getItem("jwt")}`
+                }
+            }
+        ).then((res) => {
+            dispatch(setWeekly(copyWeek))
+        }).catch((err) => {
+            console.log(err)
+        })
     }
 
+    const capitalize = (word: string) => {
+        let wordArr = word.split(" ")
+        for (let i = 0; i < wordArr.length; i++) {
+            let wordCopy = wordArr[i].slice()
+            wordArr[i] = wordCopy[0].toUpperCase() + wordCopy.substring(1)
+        }
+        return wordArr.join(" ").trim()
+    }
 
     return (
         <Card sx={{display: 'flex', flexDirection: 'column', flex: 1, height: '80%'}}>
@@ -84,11 +112,11 @@ export default function Daily({day} : DailyProps) {
                             <Grid container>
                                 {
                                     daily.exercises?.map((val, idx) => (
-                                        <Draggable key={idx} draggableId={"exercises " + val.name + day} index={idx}>
+                                        <Draggable key={idx} draggableId={"exercises " + val.exercise_id + day} index={idx}>
                                             {(provided) => (
                                                 <Grid item xs={12} ref={provided.innerRef} {...provided.draggableProps} {...provided.dragHandleProps}>
                                                     <Stack flexDirection='row' sx={{display: "flex", alignItems: 'center'}}>
-                                                        <Typography textAlign={'left'} flex={1}>{val.name}</Typography>
+                                                        <Typography textAlign={'left'} flex={1}>{capitalize(val.exercise_name)}</Typography>
                                                         <IconButton color="error" onClick={() => removeItem(idx, "exercises")}><Cancel/></IconButton>
                                                     </Stack>
                                                 </Grid>

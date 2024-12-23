@@ -4,19 +4,21 @@ import { useDispatch, useSelector } from "react-redux";
 import { AppState } from "../redux/store";
 import { ModalOptions, setModal } from "../redux/slicers/interfaceSlice.ts";
 import axios from "axios";
+import { setExercises } from "../redux/slicers/userSlice.ts";
 
 export default function CreateExercise() {
     const modal = useSelector((state: AppState) => state.interface.modal)
     const dispatch = useDispatch()
     const [exerciseName, setExerciseName] = useState("")
     const [loading, setLoading] = useState(false)
+    const exercises = useSelector((state: AppState) => state.user.exercises)
 
     const createExercise = () => {
         if (exerciseName === null || exerciseName?.length === 0) {
             return
         }
         var exercise = {
-            "exercise_name": exerciseName
+            "exercise_name": exerciseName.toLowerCase().trim()
         }
         setLoading(true)
         axios.post("http://localhost:8080/createExercise", exercise, 
@@ -25,8 +27,9 @@ export default function CreateExercise() {
                     Authorization: `Bearer ${localStorage.getItem("jwt")}`
                 }
             }
-        ).then(() => {
+        ).then((res) => {
             dispatch(setModal(null))
+            dispatch(setExercises([...exercises, res.data]))
         }).catch((err) => {
             // send logging statement that informs user of failure
             console.log(err)

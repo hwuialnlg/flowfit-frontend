@@ -1,15 +1,15 @@
-interface Exercise {
+export interface Exercise {
     id: number,
     email: string,
     exercise_name: string,
 }
 
-interface WorkoutGroup {
+export interface WorkoutGroup {
     type: string,
     name: string,
 }
 
-interface Weekly {
+export interface Weekly {
     monday: Daily,
     tuesday: Daily,
     wednesday: Daily,
@@ -19,7 +19,7 @@ interface Weekly {
     sunday: Daily,
 }
 
-interface Daily {
+export interface Daily {
     day: string,
     groups?: Array<WorkoutGroup>
     exercises?: Array<Exercise>
