@@ -6,6 +6,8 @@ import Daily from "../components/Daily.tsx";
 import { useDispatch, useSelector } from 'react-redux';
 import { AppState } from "../redux/store.ts";
 import { setWeekly } from "../redux/slicers/scheduleSlice.ts";
+import CreateExercise from "../modals/CreateExercise.tsx";
+import { setModal, ModalOptions } from "../redux/slicers/interfaceSlice.ts";
 
 export default function Exercises() {
     const dispatch = useDispatch()
@@ -175,7 +177,7 @@ export default function Exercises() {
                                 isOptionEqualToValue={(option, value) => option.exercise_name.toLowerCase().trim().includes(value.exercise_name.toLowerCase().trim())}
                             />
                             <Tooltip title={"Add Exercise"}>
-                                <IconButton>
+                                <IconButton onClick={() => dispatch(setModal(ModalOptions.ADD_EXERCISE))}>
                                     <Add/>
                                 </IconButton>
                             </Tooltip>
@@ -287,6 +289,7 @@ export default function Exercises() {
                     </Stack>
                 </Stack>
             </DragDropContext>
+            <CreateExercise/>
         </Container>
     )
 }

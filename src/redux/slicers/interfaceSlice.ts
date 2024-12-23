@@ -1,6 +1,6 @@
 import { PayloadAction, createSlice } from '@reduxjs/toolkit'
 
-enum ModalOptions {
+export enum ModalOptions {
     ADD_EXERCISE = "addExercise",
 }
 
