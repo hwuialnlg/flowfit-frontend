@@ -21,7 +21,6 @@ export default function Exercises() {
     const [filter, setFilter] = useState({} as Exercise)
     const [workoutGroupPage, setWorkoutGroupPage] = useState(1)
     const [page, setPage] = useState(1)
-    const [requests, setRequests] = useState([])
 
     const capitalize = (word: string) => {
         let wordArr = word.split(" ")
@@ -38,7 +37,7 @@ export default function Exercises() {
         }
     }, [filter])
 
-    const addDaily = (type: string, day: string, obj: any) => {
+    const addDaily = (type: string, day: string, obj: any, from = null) => {
 
         var data = {
             "day": day,
@@ -56,13 +55,22 @@ export default function Exercises() {
         ).then((res) => {
             let weeklyStateCopy = JSON.parse(JSON.stringify(weeklyState))
             weeklyStateCopy[day][(type === "exercise" ? "exercises" : "groups")] = [...weeklyStateCopy[day][(type === "exercise" ? "exercises" : "groups")], obj]
-            dispatch(setWeekly(weeklyStateCopy))
+            
+            if (from) {
+                console.log(weeklyStateCopy)
+                removeDaily("exercise", from, obj, weeklyStateCopy)
+            }
+
+            else {
+                dispatch(setWeekly(weeklyStateCopy))
+            }
+            
         }).catch((err) => {
             console.log("Unable to update daily", err)
         })
     }
 
-    const removeDaily = (type: string, day: string, obj: any) => {
+    const removeDaily = (type: string, day: string, obj: any, state = null) => {
         let copy = JSON.parse(JSON.stringify(obj))
 
         var data = {
@@ -71,7 +79,7 @@ export default function Exercises() {
             "group_id": (type === "exercise" ? null : copy.id),
         }
 
-        axios.post(`http://localhost:8080/remove${type === "exercise" ? "Exercise" : "Group"}ToDaily`,
+        axios.post(`http://localhost:8080/remove${type === "exercise" ? "Exercise" : "Group"}FromDaily`,
             data,
             {
                 headers: {
@@ -79,11 +87,21 @@ export default function Exercises() {
                 }
             }
         ).then((res) => {
-            let weeklyStateCopy = JSON.parse(JSON.stringify(weeklyState))
-            let removeIdx = weeklyStateCopy[day][(type === "exercise" ? "exercises" : "groups")].findIndex(copy)
+            let weeklyStateCopy;
+            if (state) {
+                weeklyStateCopy = state
+            }
+            else {
+                weeklyStateCopy = JSON.parse(JSON.stringify(weeklyState))
+            }
+            console.log(copy)
+            let removeIdx = Array.from(weeklyStateCopy[day][(type === "exercise" ? "exercises" : "groups")]).findIndex((v: any) => v.id === copy.id)
             weeklyStateCopy[day][(type === "exercise" ? "exercises" : "groups")].splice(removeIdx, 1)
             dispatch(setWeekly(weeklyStateCopy))
         }).catch((err) => {
+            // if (state) {
+            //     dispatch(setWeekly(state))
+            // }
             console.log("Unable to update daily", err)
         })
     }
@@ -106,19 +124,19 @@ export default function Exercises() {
                     if (source.droppableId.split(" ").length > 1) {
                         let sourceDay = source.droppableId.split(" ")[1].toLowerCase()
                         copyWeek[day]["exercises"] = [...copyWeek[day]["exercises"], copyWeek[sourceDay]["exercises"][source.index]]
-                        addDaily("exercise", day, copyWeek[sourceDay]["exercises"][source.index])
+                        addDaily("exercise", day, copyWeek[sourceDay]["exercises"][source.index], sourceDay)
                     }
                     else {
                         copyWeek[day]["exercises"] = [...copyWeek[day]["exercises"], JSON.parse(JSON.stringify(exercises[source.index]))]
-                        addDaily("exercise", day, exercises[source.index])
+                        addDaily("exercise", day, JSON.parse(JSON.stringify(exercises[source.index])))
                     }
 
                     // remove from day array
-                    if (source.droppableId.split(" ").length > 1) {
-                        let sourceDay = source.droppableId.split(" ")[1].toLowerCase()
-                        let removedObjArr = copyWeek[sourceDay]["exercises"].splice(source.index, 1)
-                        removeDaily("exercise", sourceDay, removedObjArr[0])
-                    }
+                    // if (source.droppableId.split(" ").length > 1) {
+                    //     let sourceDay = source.droppableId.split(" ")[1].toLowerCase()
+                    //     let removedObjArr = copyWeek[sourceDay]["exercises"].splice(source.index, 1)
+                    //     removeDaily("exercise", sourceDay, removedObjArr[0])
+                    // }
 
                     // setWeeklyState(copyWeek)
                     // dispatch(setWeekly(copyWeek))
@@ -186,6 +204,7 @@ export default function Exercises() {
         else {
             return;
         }
+
         // if source type moves to wrong destination type just auto return
         // on cancel button just return
     }
