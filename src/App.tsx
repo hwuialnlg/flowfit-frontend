@@ -13,6 +13,7 @@ import { AppState } from './redux/store.ts';
 import axios from 'axios';
 import { setWeekly } from './redux/slicers/scheduleSlice.ts';
 import { setExercises } from './redux/slicers/userSlice.ts';
+import { setGroups } from './redux/slicers/interfaceSlice.ts';
 
 export default function App() {
     const isLoggedIn = useSelector((state: AppState) => state.user.isLoggedIn)
@@ -27,6 +28,18 @@ export default function App() {
             dispatch(setExercises(res.data["exercises"]))
         }).catch((err) => {
             console.log("App failed to grab exercises", err)
+        })
+    }
+
+    const getGroups = () => {
+        axios.get("http://localhost:8080/groups", 
+            {
+                headers: {Authorization: `Bearer ${localStorage.getItem("jwt")}`}
+            }
+        ).then((res) => {
+            dispatch(setGroups(res.data["groups"]))
+        }).catch((err) => {
+            console.log("App failed to grab groups", err)
         })
     }
 
