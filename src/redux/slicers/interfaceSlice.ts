@@ -1,6 +1,6 @@
 import { PayloadAction, createSlice } from '@reduxjs/toolkit'
 
-enum ModalOptions {
+export enum ModalOptions {
     ADD_EXERCISE = "addExercise",
 }
 
@@ -22,15 +22,11 @@ export const interfaceSlice = createSlice({
     reducers: {
         setModal: (state, action : PayloadAction<null | ModalOptions>) => {
             state.modal = action.payload
-        },
-
-        setGroups: (state, action : PayloadAction<Array<string>>) => {
-            state.groups = action.payload
         }
     }
 })
 
 // Action creators are generated for each case reducer function
-export const { setModal, setGroups} = interfaceSlice.actions
+export const { setModal } = interfaceSlice.actions
 
 export default interfaceSlice.reducer
