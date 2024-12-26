@@ -98,12 +98,12 @@ export default function Login() {
                         }} flexDirection={'row'}
                     >
                         <FormControlLabel control={<Checkbox/>} label="Remember Me" />
-                        <a href={""}><Typography textAlign={'center'}>Forgot password?</Typography></a>
+                        <a href={"/forgotpassword"}><Typography textAlign={'center'}>Forgot password?</Typography></a>
                     </Stack>
 
                     <Button fullWidth variant="contained" onClick={() => login()}>Sign in</Button>
 
-                    <Typography>Don't have an account yet? {<a href={""}>Sign up</a>}</Typography>
+                    <Typography>Don't have an account yet? {<a href={"/signup"}>Sign up</a>}</Typography>
                 </CardContent>
             </Card>
         </Container>
