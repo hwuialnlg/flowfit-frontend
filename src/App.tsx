@@ -14,6 +14,8 @@ import axios from 'axios';
 import { setWeekly } from './redux/slicers/scheduleSlice.ts';
 import { setExercises } from './redux/slicers/userSlice.ts';
 import { setGroups } from './redux/slicers/userSlice.ts';
+import SignUp from './pages/SignUp.tsx';
+import ForgotPassword from './pages/ForgotPassword.tsx';
 
 export default function App() {
     const isLoggedIn = useSelector((state: AppState) => state.user.isLoggedIn)
@@ -78,6 +80,8 @@ export default function App() {
                 <Route path="/" element={<ProtectedRoute isLoggedIn={isLoggedIn}><Home /></ProtectedRoute>}/>
                 <Route path="/dashboard" element={<ProtectedRoute isLoggedIn={isLoggedIn}><Home /></ProtectedRoute>}/>
                 <Route path="/login" element={<Login />}/>
+                <Route path="/signup" element={<SignUp />}/>
+                <Route path="/forgotpassword" element={<ForgotPassword />}/>
                 <Route path="/profile" element={<ProtectedRoute isLoggedIn={isLoggedIn}><Profile /></ProtectedRoute>}/>
                 <Route path="/exercises" element={<ProtectedRoute isLoggedIn={isLoggedIn}><Exercises /></ProtectedRoute>}/>
                 <Route path="/progress" element={<ProtectedRoute isLoggedIn={isLoggedIn}><Progress /></ProtectedRoute>}/>
