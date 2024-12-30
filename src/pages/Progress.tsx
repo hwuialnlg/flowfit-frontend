@@ -1,11 +1,170 @@
-import { Autocomplete, Card, CardContent, CardHeader, Container, Grid, List, ListItem, Pagination, Paper, Skeleton, Stack, TextField, Typography } from "@mui/material";
-import React, { useState } from "react";
+import { Autocomplete, Button, Card, CardContent, CardHeader, Container, Pagination, Stack, TextField, Tooltip, Typography } from "@mui/material";
+import React, { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import { AppState } from "../redux/store";
+import axios, { AxiosResponse } from "axios";
+import { Exercise } from "../interfaces/models";
+import 'chartjs-adapter-date-fns'
+import { Line } from 'react-chartjs-2'
+import { Chart as ChartJS, CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip as ChartToolTip, Legend, TimeScale, TimeSeriesScale } from "chart.js";
 
 export default function Progress() {
-    const exercises = useSelector((state: AppState) => state.user.exercises)
+    ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Title, ChartToolTip, Legend, TimeScale, TimeSeriesScale);
 
+    const exercises = useSelector((state: AppState) => state.user.exercises)
+    const [selected, setSelected] = useState<Exercise>()
+    interface Stat {
+        date: Date,
+        exercise_id: number,
+        id: number,
+        weight: number
+    }
+
+    interface mapStats {
+        email: string,
+        exercise_name: string,
+        exercise_id: number,
+        exercise_stats: Array<Stat>
+    }
+
+    const initialMap: mapStats = {
+        email: "",
+        exercise_name: "",
+        exercise_id: 0,
+        exercise_stats: [],
+    }
+
+    const initialData = {
+        labels: Array<string>(),
+        datasets: [{
+            label: "",
+            data: Array<any>(),
+            fill: false,
+            borderColor: 'rgb(75,192,192)',
+            tension: 0.4
+        }]
+    }
+
+    // const options = {
+    //     scales: {
+    //       x: {
+    //         type: 'timeseries', // Use 'time' scale for date-based x-axis
+    //         time: {
+    //           unit: 'day',  // Display the scale by month
+    //           unitStepSize: 1
+    //         },
+    //         title: {
+    //           display: true,
+    //           text: 'Date'
+    //         }
+    //       },
+    //       y: {
+    //         beginAtZero: true
+    //       }
+    //     },
+    //     responsive: true
+    //   };
+
+    const [map, setMap] = useState<Map<number, mapStats>>()
+    const [points, setPoints] = useState(Array<Stat>())
+    const [labels, setLabels] = useState(Array<string>())
+    const [data, setData] = useState(initialData)
+    const [statField, setStatField] = useState("")
+
+    const capitalize = (word: string = "") => {
+        if (word === "") {
+            return ""
+        }
+        let wordArr = word.split(" ")
+        for (let i = 0; i < wordArr.length; i++) {
+            let wordCopy = wordArr[i].slice()
+            wordArr[i] = wordCopy[0].toUpperCase() + wordCopy.substring(1)
+        }
+        return wordArr.join(" ").trim()
+    }
+
+    const getExerciseStats = async () => {
+        let req: Promise<AxiosResponse<any>>[] = []; 
+        exercises?.forEach((val) => req.push(axios.get("http://localhost:8080/exercise_stats?exercise_id=" + val.id,
+            {
+                headers: {
+                    Authorization: `Bearer ${localStorage.getItem("jwt")}`
+                }
+            } 
+        )))
+
+        try {
+            const responses = await axios.all(req)
+            let res = responses.map((val) => val.data)
+            let map = new Map()
+            res.forEach((obj) => {map[obj.exercise_id] = obj})
+            setMap(map)
+        }
+
+        catch (error) {
+            console.log(error)
+        }
+    }
+
+    const getChart = (time = null) => {
+        axios.get("http://localhost:8080/chart?exercise_id=" + selected?.id + `&?time=` + (time ? time : "1M"), 
+            {
+                headers: {
+                    Authorization: `Bearer ${localStorage.getItem("jwt")}`
+                }
+            }
+        ).then((res) => {
+            let tempMap = new Map()
+            for (let i = 0; i < res.data["stats"].length; i++) {
+                tempMap.set(res.data["stats"][i].date, res.data["stats"][i])
+            }
+            setPoints(Array.from(tempMap.values()))
+            setLabels(res.data["stats"].map((val) => val.date))
+        }).catch((err) => {
+            console.log("FAILED TO GET CHART DATA", err)
+        })
+    }
+
+    const addStat = () => {
+        axios.post("http://localhost:8080/add_exercise_stats",
+            {
+                exercise_id: selected?.id,
+                stat: Number(statField),
+            },
+            {
+                headers: {
+                    Authorization: `Bearer ${localStorage.getItem("jwt")}`
+                }
+            }
+        ).then((res) => {
+            setPoints([...points, res.data["exercise_stats"]])
+        }).catch((err) => {
+            console.log("FAILED TO GET CHART DATA", err)
+        })
+    }
+
+    useEffect(() => {
+        getExerciseStats()
+    }, [])
+
+    useEffect(() => {
+        getChart()
+    }, [selected, ])
+
+    useEffect(() => {
+        let copyDataSet = data.datasets.slice()
+        copyDataSet[0].data = []
+        points.forEach((val) => copyDataSet[0].data.push({y: val.weight, x: new Date(val.date)}))
+        copyDataSet["label"] = capitalize(selected?.exercise_name)
+        setData({
+            labels: labels,
+            datasets: copyDataSet,
+        })
+    }, [points])
+
+    useEffect(() => {
+        console.log(data)
+    }, [data])
 
     return (
         <Container
@@ -24,20 +183,31 @@ export default function Progress() {
                 sx={{
                     width: '20%',
                     height: 'calc(100vh - 200px)',
-                    // height: '100%',
                     display: 'flex',
                     flexDirection: 'column',
+                    overflowY: 'auto'
                 }}
             >
                 <Autocomplete
                     options={exercises}
                     renderInput={(props) => <TextField {...props} label="Exercise"></TextField>}
-                    getOptionLabel={(option) => option.exercise_name}
-                    sx={{
-                        flex: 1
-                    }}
+                    onChange={(e, v) => v !== null && setSelected(v)}
+                    getOptionLabel={(option) => capitalize(option.exercise_name)}
+                    sx={{mb: 3}}
                 />
 
+                <Card 
+                    sx={{
+                        borderRadius: 0,
+                        flex: 1,
+                        display: (exercises?.length <= 0 ? 'flex' : 'none'),
+                        alignItems: 'center',
+                    }}
+                >
+                    <CardContent>
+                        <Typography textAlign={'left'}>No Exercises</Typography>
+                    </CardContent>
+                </Card>
                 {
                     exercises.map((val, idx) => {
                         return (
@@ -46,28 +216,19 @@ export default function Progress() {
                                     borderRadius: 0,
                                     flex: 1,
                                     display: 'flex',
-                                    alignContent: 'center'
+                                    backgroundColor: (val.id === selected?.id ? "lightblue" : 'white'),
+                                    "&:hover": {
+                                        backgroundColor: "#757de8"
+                                    },
                                 }}
+                                onClick={() => setSelected(val)}
                             >
-                                <CardHeader title={val.exercise_name}></CardHeader>
+                                <CardContent>
+                                    <Typography textAlign='left'>{capitalize(val.exercise_name)}</Typography>
+                                </CardContent>
                             </Card>
                         )
                     })
-                }
-                {
-                    exercises.length <= 0 &&
-                        <Card 
-                            sx={{
-                                borderRadius: 0,
-                                flex: 1,
-                                display: 'flex',
-                                alignItems: 'center'
-                            }}
-                        >
-                            <CardContent>
-                                <Typography textAlign={'left'}>No Exercises</Typography>
-                            </CardContent>
-                        </Card>
                 }
                 {
                     exercises.length <= 0 &&
@@ -91,7 +252,9 @@ export default function Progress() {
                     exercises.length > 0 &&
                         <Pagination
                             sx={{
+                                mt: 2,
                                 width: '100%',
+                                display: 'flex',
                                 justifyContent: 'center',
                                 alignContent: 'center'
                             }}
@@ -100,21 +263,28 @@ export default function Progress() {
                 }
 
             </Stack>
-
-            <Stack
-                sx={{
-                    width: '75%',
-                    height: 'calc(100vh - 200px)',
-                }}
-            >   
-                <Card sx={{height: '100%'}}>
-                    <CardHeader title={<Typography>Selected Exercise</Typography>}></CardHeader>
-                    <CardContent>
-                        <Typography>Enter data</Typography>
-                        <Typography>View data points</Typography>
-                    </CardContent>
-                </Card>
-            </Stack>
+            
+            {
+                selected &&
+                    <Stack
+                        sx={{
+                            width: '75%',
+                            height: 'calc(100vh - 200px)',
+                        }}
+                    >   
+                        <Card sx={{height: '100%'}}>
+                            <CardHeader title={capitalize(selected?.exercise_name)}></CardHeader>
+                            <CardContent>
+                                <Stack flexDirection={'row'} columnGap={1}>
+                                    <TextField label={`Insert Data`} type='number' inputMode='numeric' value={statField} fullWidth onChange={(e) => setStatField(e.target.value)}></TextField>
+                                    <Button variant='contained' onClick={() => addStat()}>Submit</Button>
+                                </Stack>
+                                {/* <Line data={data} options={options}/> */}
+                                <Line data={data}/>
+                            </CardContent>
+                        </Card>
+                    </Stack>
+            }
         </Container>
     )
 }
