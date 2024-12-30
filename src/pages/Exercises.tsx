@@ -42,7 +42,6 @@ export default function Exercises() {
     }, [filter, workoutFilter])
 
     const addDaily = (type: string, day: string, obj: any, from = null) => {
-
         var data = {
             "day": day,
             "exercise_id": (type === "exercise" ? obj.id : null), 
@@ -125,11 +124,10 @@ export default function Exercises() {
                     let copyWeek = JSON.parse(JSON.stringify(weeklyState))
                     if (source.droppableId.split(" ").length > 1) {
                         let sourceDay = source.droppableId.split(" ")[1].toLowerCase()
-                        copyWeek[day]["exercises"] = [...copyWeek[day]["exercises"], copyWeek[sourceDay]["exercises"][((page - 1) * 3) + source.index]]
-                        addDaily("exercise", day, copyWeek[sourceDay]["exercises"][((page - 1) * 3) + source.index], sourceDay)
+                        copyWeek[day]["exercises"] = [...copyWeek[day]["exercises"], copyWeek[sourceDay]["exercises"][source.index]]
+                        addDaily("exercise", day, copyWeek[sourceDay]["exercises"][source.index], sourceDay)
                     }
                     else {
-                        console.log(exercises[((page - 1) * 3) + source.index])
                         copyWeek[day]["exercises"] = [...copyWeek[day]["exercises"], JSON.parse(JSON.stringify(exercises[((page - 1) * 3) + source.index]))]
                         addDaily("exercise", day, JSON.parse(JSON.stringify(exercises[((page - 1) * 3) + source.index])))
                     }
@@ -140,7 +138,7 @@ export default function Exercises() {
                         // just remove from day
                         let sourceDay = source.droppableId.split(" ")[1].toLowerCase()
                         let copyDayExercise = Array.from(weeklyState[sourceDay]["exercises"])
-                        copyDayExercise.splice(((page - 1) * 3) + source.index, 1)
+                        copyDayExercise.splice(source.index, 1)
                         let copySourceWeek = JSON.parse(JSON.stringify(weeklyState))
                         copySourceWeek[sourceDay]["exercises"] = copyDayExercise
                         removeDaily("exercise", sourceDay, copyDayExercise)
@@ -162,9 +160,11 @@ export default function Exercises() {
                         let copyWeek = JSON.parse(JSON.stringify(weeklyState))
                         // day --> day, exercise --> day
                         if (source.droppableId.split(" ").length > 1) {
+                            console.log(source)
+                            console.log(source.index)
                             let sourceDay = source.droppableId.split(" ")[1].toLowerCase()
-                            copyWeek[day]["groups"] = [...copyWeek[day]["groups"], copyWeek[sourceDay]["groups"][((workoutGroupPage - 1) * 3) + source.index]]
-                            addDaily("group", day, copyWeek[sourceDay]["groups"][((workoutGroupPage - 1) * 3) + source.index], sourceDay)
+                            copyWeek[day]["groups"] = [...copyWeek[day]["groups"], copyWeek[sourceDay]["groups"][source.index]]
+                            addDaily("group", day, copyWeek[sourceDay]["groups"][source.index], sourceDay)
                         }
                         else {
                             copyWeek[day]["groups"] = [...copyWeek[day]["groups"], JSON.parse(JSON.stringify(groups[((workoutGroupPage - 1) * 3) + source.index]))]
@@ -176,7 +176,7 @@ export default function Exercises() {
                     if (source.droppableId.split(" ").length > 1) {
                         let sourceDay = source.droppableId.split(" ")[1].toLowerCase()
                         let copyDayGroups = Array.from(weeklyState[sourceDay]["groups"])
-                        copyDayGroups.splice(((workoutGroupPage - 1) * 3) + source.index, 1)
+                        copyDayGroups.splice(source.index, 1)
                         let copySourceWeek = JSON.parse(JSON.stringify(weeklyState))
                         copySourceWeek[sourceDay]["groups"] = copyDayGroups
                         removeDaily("group", sourceDay, copyDayGroups)

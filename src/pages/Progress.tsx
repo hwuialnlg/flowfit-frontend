@@ -231,21 +231,6 @@ export default function Progress() {
                         })
                     
                 }
-
-                {
-                    exercises.length > 0 &&
-                        <Pagination
-                            sx={{
-                                mt: 2,
-                                width: '100%',
-                                display: 'flex',
-                                justifyContent: 'center',
-                                alignContent: 'center'
-                            }}
-                            count={Math.ceil(exercises.length / 8)}
-                        />
-                }
-
             </Stack>
             
             {
