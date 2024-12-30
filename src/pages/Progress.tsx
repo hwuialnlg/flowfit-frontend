@@ -1,4 +1,4 @@
-import { Autocomplete, Button, Card, CardContent, CardHeader, Container, Pagination, Stack, TextField, Tooltip, Typography } from "@mui/material";
+import { Autocomplete, Button, ButtonGroup, Card, CardContent, CardHeader, Container, Pagination, Stack, TextField, ToggleButton, ToggleButtonGroup, Tooltip, Typography } from "@mui/material";
 import React, { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import { AppState } from "../redux/store";
@@ -45,31 +45,12 @@ export default function Progress() {
         }]
     }
 
-    // const options = {
-    //     scales: {
-    //       x: {
-    //         type: 'timeseries', // Use 'time' scale for date-based x-axis
-    //         time: {
-    //           unit: 'day',  // Display the scale by month
-    //           unitStepSize: 1
-    //         },
-    //         title: {
-    //           display: true,
-    //           text: 'Date'
-    //         }
-    //       },
-    //       y: {
-    //         beginAtZero: true
-    //       }
-    //     },
-    //     responsive: true
-    //   };
-
     const [map, setMap] = useState<Map<number, mapStats>>()
     const [points, setPoints] = useState(Array<Stat>())
     const [labels, setLabels] = useState(Array<string>())
     const [data, setData] = useState(initialData)
     const [statField, setStatField] = useState("")
+    const [selectTime, setSelectedTime] = useState("1M")
 
     const capitalize = (word: string = "") => {
         if (word === "") {
@@ -106,8 +87,8 @@ export default function Progress() {
         }
     }
 
-    const getChart = (time = null) => {
-        axios.get("http://localhost:8080/chart?exercise_id=" + selected?.id + `&?time=` + (time ? time : "1M"), 
+    const getChart = () => {
+        axios.get("http://localhost:8080/chart?exercise_id=" + selected?.id + `&time=` + (selectTime ? selectTime : "1M"), 
             {
                 headers: {
                     Authorization: `Bearer ${localStorage.getItem("jwt")}`
@@ -121,6 +102,7 @@ export default function Progress() {
             setPoints(Array.from(tempMap.values()))
             setLabels(Array.from(tempMap.keys()))
         }).catch((err) => {
+            setData(initialData)
             console.log("FAILED TO GET CHART DATA", err)
         })
     }
@@ -149,13 +131,13 @@ export default function Progress() {
 
     useEffect(() => {
         getChart()
-    }, [selected, ])
+    }, [selected, selectTime])
 
     useEffect(() => {
         let copyDataSet = data.datasets.slice()
         copyDataSet[0].data = []
         points.forEach((val) => copyDataSet[0].data.push({y: val.weight, x: new Date(val.date)}))
-        copyDataSet["label"] = capitalize(selected?.exercise_name)
+        copyDataSet[0].label = capitalize(selected?.exercise_name)
         setData({
             labels: labels,
             datasets: copyDataSet,
@@ -211,7 +193,8 @@ export default function Progress() {
                 {
                     exercises.map((val, idx) => {
                         return (
-                            <Card 
+                            <Card
+                                key={idx}
                                 sx={{
                                     borderRadius: 0,
                                     flex: 1,
@@ -234,7 +217,8 @@ export default function Progress() {
                     exercises.length <= 0 &&
                         Array.from({length: 7}).map((_, idx) => {
                             return (
-                                <Card 
+                                <Card
+                                    key={idx} 
                                     sx={{
                                         borderRadius: 0,
                                         flex: 1
@@ -279,6 +263,12 @@ export default function Progress() {
                                     <TextField label={`Insert Data`} type='number' inputMode='numeric' value={statField} fullWidth onChange={(e) => setStatField(e.target.value)}></TextField>
                                     <Button variant='contained' onClick={() => addStat()}>Submit</Button>
                                 </Stack>
+                                <ToggleButtonGroup value={selectTime} exclusive onChange={(e, v) => setSelectedTime(v)} sx={{mt: 2, display: 'flex', justifyContent: 'flex-end'}}>
+                                    <ToggleButton value="1M">1M</ToggleButton>
+                                    <ToggleButton value="3M">3M</ToggleButton>
+                                    <ToggleButton value="1Y">1Y</ToggleButton>
+                                    <ToggleButton value="ALL">ALL</ToggleButton>
+                                </ToggleButtonGroup>
                                 {/* <Line data={data} options={options}/> */}
                                 <Line data={data}/>
                             </CardContent>
