@@ -27,6 +27,11 @@ export default function Progress() {
                     // height: '100%',
                     display: 'flex',
                     flexDirection: 'column',
+<<<<<<< Updated upstream
+=======
+                    overflowY: 'auto',
+                    p: 1
+>>>>>>> Stashed changes
                 }}
             >
                 <Autocomplete
@@ -43,7 +48,7 @@ export default function Progress() {
                         return (
                             <Card 
                                 sx={{
-                                    borderRadius: 0,
+                                    elevation: 10,
                                     flex: 1,
                                     display: 'flex',
                                     alignContent: 'center'
