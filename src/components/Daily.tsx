@@ -1,6 +1,6 @@
 import { Droppable, Draggable } from "@hello-pangea/dnd";
-import { Cancel } from "@mui/icons-material";
-import { Card, CardHeader, CardContent, Grid, Stack, Typography, Divider, IconButton } from "@mui/material";
+import { Cancel, CheckBox } from "@mui/icons-material";
+import { Card, CardHeader, CardContent, Grid, Stack, Typography, Divider, IconButton, Checkbox, FormControlLabel } from "@mui/material";
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { AppState } from "../redux/store";
@@ -10,6 +10,7 @@ import { Exercise, Group } from "../interfaces/models.tsx";
 
 interface DailyProps {
     day: string
+    homepage?: boolean
 }
 
 interface DailyState {
@@ -68,72 +69,87 @@ export default function Daily({day} : DailyProps) {
                 }}
             />
                 {/* Accepts only interfaces of type WorkoutGroup */}
-                <Droppable droppableId={"groups " + day.toLowerCase()}>
-                    {(provided) => (
-                        <CardContent
-                            ref={provided.innerRef} 
-                            {...provided.droppableProps}
-                            sx={{
-                                minHeight: '30%',
-                                maxHeight: '30%',
-                                overflowY: 'auto'
-                            }}
-                        >
-                        
-                            <Grid container>
-                                {
-                                    daily?.groups?.map((val, idx) => (
-                                        <Draggable key={idx} draggableId={"groups " + val.id + day} index={idx}>
-                                            {(provided) => (
-                                                <Grid item xs={12} ref={provided.innerRef} {...provided.draggableProps} {...provided.dragHandleProps}>
-                                                    <Stack flexDirection='row' sx={{display: "flex", alignItems: 'center'}}>
-                                                        <Typography flex={1} textAlign={'left'}>{capitalize(val.name)}</Typography>
-                                                        <IconButton onClick={() => removeItem(idx, "groups")} color="error"><Cancel/></IconButton>
-                                                    </Stack>
-                                                </Grid>
-                                            )}
-                                        </Draggable>
-                                    ))
-                                }
-                                {provided.placeholder}
-                            </Grid>
-                        </CardContent>
-                    )}
-                </Droppable>
+                {
+                    (daily.homepage === undefined || !daily.homepage) &&
+                        <>
+                            <Droppable droppableId={"groups " + day.toLowerCase()}>
+                                {(provided) => (
+                                    <CardContent
+                                        ref={provided.innerRef} 
+                                        {...provided.droppableProps}
+                                        sx={{
+                                            minHeight: '30%',
+                                            maxHeight: '30%',
+                                            overflowY: 'auto'
+                                        }}
+                                    >
+                                    
+                                        <Grid container>
+                                            {
+                                                daily?.groups?.map((val, idx) => (
+                                                    <Draggable key={idx} draggableId={"groups " + val.id + day} index={idx}>
+                                                        {(provided) => (
+                                                            <Grid item xs={12} ref={provided.innerRef} {...provided.draggableProps} {...provided.dragHandleProps}>
+                                                                <Stack flexDirection='row' sx={{display: "flex", alignItems: 'center'}}>
+                                                                    <Typography flex={1} textAlign={'left'}>{capitalize(val.name)}</Typography>
+                                                                    <IconButton onClick={() => removeItem(idx, "groups")} color="error"><Cancel/></IconButton>
+                                                                </Stack>
+                                                            </Grid>
+                                                        )}
+                                                    </Draggable>
+                                                ))
+                                            }
+                                            {provided.placeholder}
+                                        </Grid>
+                                    </CardContent>
+                                )}
+                            </Droppable>
 
-                <Divider orientation='horizontal' flexItem></Divider>
+                            <Divider orientation='horizontal' flexItem></Divider>
 
-                {/* Accepts only interfaces of type Exercise */}
-                <Droppable droppableId={"exercises " + day.toLowerCase()}>
-                    {(provided) => (
-                        <CardContent
-                            ref={provided.innerRef} {...provided.droppableProps}
-                            sx={{
-                                minHeight: '30%',
-                                maxHeight: '30%',
-                                overflowY: 'auto'
-                            }}
-                        >
-                            <Grid container>
-                                {
-                                    daily?.exercises?.map((val, idx) => (
-                                        <Draggable key={idx} draggableId={"exercises " + val.exercise_id + day} index={idx}>
-                                            {(provided) => (
-                                                <Grid item xs={12} ref={provided.innerRef} {...provided.draggableProps} {...provided.dragHandleProps}>
-                                                    <Stack flexDirection='row' sx={{display: "flex", alignItems: 'center'}}>
-                                                        <Typography textAlign={'left'} flex={1}>{capitalize(val.exercise_name)}</Typography>
-                                                        <IconButton color="error" onClick={() => removeItem(idx, "exercises")}><Cancel/></IconButton>
-                                                    </Stack>
-                                                </Grid>
-                                            )}
-                                        </Draggable>
-                                    ))
-                                }
-                            </Grid>
-                            {provided.placeholder}
-                        </CardContent>
-                    )}
-                </Droppable>
+                            {/* Accepts only interfaces of type Exercise */}
+                            <Droppable droppableId={"exercises " + day.toLowerCase()}>
+                                {(provided) => (
+                                    <CardContent
+                                        ref={provided.innerRef} {...provided.droppableProps}
+                                        sx={{
+                                            minHeight: '30%',
+                                            maxHeight: '30%',
+                                            overflowY: 'auto'
+                                        }}
+                                    >
+                                        <Grid container>
+                                            {
+                                                daily?.exercises?.map((val, idx) => (
+                                                    <Draggable key={idx} draggableId={"exercises " + val.exercise_id + day} index={idx}>
+                                                        {(provided) => (
+                                                            <Grid item xs={12} ref={provided.innerRef} {...provided.draggableProps} {...provided.dragHandleProps}>
+                                                                <Stack flexDirection='row' sx={{display: "flex", alignItems: 'center'}}>
+                                                                    <Typography textAlign={'left'} flex={1}>{capitalize(val.exercise_name)}</Typography>
+                                                                    <IconButton color="error" onClick={() => removeItem(idx, "exercises")}><Cancel/></IconButton>
+                                                                </Stack>
+                                                            </Grid>
+                                                        )}
+                                                    </Draggable>
+                                                ))
+                                            }
+                                        </Grid>
+                                        {provided.placeholder}
+                                    </CardContent>
+                                )}
+                            </Droppable>
+                        </>
+                }
+                {
+                    daily.homepage &&
+                        <>
+                            {
+                                daily.exercises.map((val, idx) => {
+                                    <FormControlLabel label={capitalize(val.exercise_name)} control={<CheckBox></CheckBox>}></FormControlLabel>
+                                })
+                            }                        
+                        </>
+                }
         </Card>
     )
 }
