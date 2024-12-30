@@ -275,6 +275,23 @@ export default function Progress() {
                         </Card>
                     </Stack>
             }
+
+            {
+                !selected &&
+                <Stack
+                sx={{
+                    width: '75%',
+                    height: 'calc(100vh - 200px)',
+                }}
+            >   
+                <Card sx={{height: '100%'}}>
+                    <CardHeader title={"No Exercise Selected"}></CardHeader>
+                    <CardContent sx={{height: '100%', display: 'flex', justifyContent: 'center', alignItems: 'center'}}>
+                        <Typography>Select An Exercise to See Chart and Insert Data</Typography>
+                    </CardContent>
+                </Card>
+            </Stack>
+            }
         </Container>
     )
 }
