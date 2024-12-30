@@ -1,4 +1,4 @@
-import { Autocomplete, Card, CardHeader, Container, Grid, IconButton, Pagination, Paper, Stack, TextField, Tooltip, Typography, imageListClasses } from "@mui/material";
+import { Autocomplete, Card, CardHeader, Container, Grid, IconButton, Pagination, Paper, Stack, TextField, Tooltip, Typography } from "@mui/material";
 import React, { useEffect, useState } from "react";
 import { Add } from "@mui/icons-material";
 import { DragDropContext, Draggable, Droppable } from "@hello-pangea/dnd";
@@ -8,7 +8,7 @@ import { AppState } from "../redux/store.ts";
 import { setWeekly } from "../redux/slicers/scheduleSlice.ts";
 import CreateExercise from "../modals/CreateExercise.tsx";
 import { setModal, ModalOptions } from "../redux/slicers/interfaceSlice.ts";
-import { Exercise, Group } from '../interfaces/models.tsx'
+import { Exercise, Group } from '../interfaces/models.tsx';
 import axios from "axios";
 
 export default function Exercises() {
@@ -42,7 +42,6 @@ export default function Exercises() {
     }, [filter, workoutFilter])
 
     const addDaily = (type: string, day: string, obj: any, from = null) => {
-
         var data = {
             "day": day,
             "exercise_id": (type === "exercise" ? obj.id : null), 
@@ -129,8 +128,8 @@ export default function Exercises() {
                         addDaily("exercise", day, copyWeek[sourceDay]["exercises"][source.index], sourceDay)
                     }
                     else {
-                        copyWeek[day]["exercises"] = [...copyWeek[day]["exercises"], JSON.parse(JSON.stringify(exercises[source.index]))]
-                        addDaily("exercise", day, JSON.parse(JSON.stringify(exercises[source.index])))
+                        copyWeek[day]["exercises"] = [...copyWeek[day]["exercises"], JSON.parse(JSON.stringify(exercises[((page - 1) * 3) + source.index]))]
+                        addDaily("exercise", day, JSON.parse(JSON.stringify(exercises[((page - 1) * 3) + source.index])))
                     }
                 }
                 else {
@@ -161,13 +160,15 @@ export default function Exercises() {
                         let copyWeek = JSON.parse(JSON.stringify(weeklyState))
                         // day --> day, exercise --> day
                         if (source.droppableId.split(" ").length > 1) {
+                            console.log(source)
+                            console.log(source.index)
                             let sourceDay = source.droppableId.split(" ")[1].toLowerCase()
                             copyWeek[day]["groups"] = [...copyWeek[day]["groups"], copyWeek[sourceDay]["groups"][source.index]]
                             addDaily("group", day, copyWeek[sourceDay]["groups"][source.index], sourceDay)
                         }
                         else {
-                            copyWeek[day]["groups"] = [...copyWeek[day]["groups"], JSON.parse(JSON.stringify(groups[source.index]))]
-                            addDaily("group", day, JSON.parse(JSON.stringify(groups[source.index])))
+                            copyWeek[day]["groups"] = [...copyWeek[day]["groups"], JSON.parse(JSON.stringify(groups[((workoutGroupPage - 1) * 3) + source.index]))]
+                            addDaily("group", day, JSON.parse(JSON.stringify(groups[((workoutGroupPage - 1) * 3) + source.index])))
                         }
                     }
                 }
@@ -256,9 +257,9 @@ export default function Exercises() {
                         </Stack>
                         
                         <Droppable droppableId="exercises" direction="vertical"
-                            renderClone={(provided, _, rubric) => (
-                                <Typography textAlign={'center'} ref={provided.innerRef} {...provided.dragHandleProps} {...provided.draggableProps}>{capitalize(exercises[rubric.source.index].exercise_name)}</Typography>
-                            )}
+                            // renderClone={(provided, _, rubric) => (
+                            //     <Typography textAlign={'center'} ref={provided.innerRef} {...provided.dragHandleProps} {...provided.draggableProps}>{capitalize(exercises[rubric.source.index].exercise_name)}</Typography>
+                            // )}
                         
                         >
                             {(provided) => (
@@ -277,7 +278,7 @@ export default function Exercises() {
                                     {
                                         exercises.filter((v) => filter?.id > 0 ? filter.exercise_name === v.exercise_name : true).slice((page - 1) * 3, Math.min(3 * page, exercises.length)).map((val, idx) => {
                                             return (
-                                                <Draggable index={idx} key={idx} draggableId={"exercises " + val.exercise_name}>
+                                                <Draggable index={idx} draggableId={"exercises " + val.exercise_name}>
                                                     {(provided, snapshot) => (
                                                         <Grid item 
                                                             xs={12} 

@@ -1,51 +1,11 @@
-Utilizes hello-pangea/dnd for assigning workout groups + exercises to a weekly schedule
-Tracks progression/growth of exercises and workouts
-Create new workouts and delete new workouts, all customizable
+### Integration
+- Integrated backend and frontend, so signup and sign in are functional. Passwords are hashed, emails are not yet verified, however.
+- Able to create exercises and create a schedule, will persist between logins and refreshes.
+- Able to insert data for a specific exercise and a graph will generate from it (data is saved as well).
 
-
-# Getting Started with Create React App
-
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
-
-## Available Scripts
-
-In the project directory, you can run:
-
-### `npm start`
-
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
-
-The page will reload if you make edits.\
-You will also see any lint errors in the console.
-
-### `npm test`
-
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
-
-### `npm run build`
-
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
-
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
-
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
-
-### `npm run eject`
-
-**Note: this is a one-way operation. Once you `eject`, you can’t go back!**
-
-If you aren’t satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
-
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you’re on your own.
-
-You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
-
-## Learn More
-
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
-
-To learn React, check out the [React documentation](https://reactjs.org/).
+### DEMO IMAGES
+![flowfit_signup](https://github.com/user-attachments/assets/959c46ec-35df-4bf1-afd4-b9acd14cd360)
+![flowfit_signin](https://github.com/user-attachments/assets/5689b25c-22cd-4842-9c20-74d4a0694116)
+![flowfit_exercises](https://github.com/user-attachments/assets/ecdc3015-3f3b-4c0d-a9fe-d20410dd4291)
+![flowfit_progress](https://github.com/user-attachments/assets/ec630e17-b803-468a-8ebc-1dda2c3d494e)
+![flowfit_progress_chart](https://github.com/user-attachments/assets/d273f85d-bed5-494a-8249-5cbcb07344b7)
