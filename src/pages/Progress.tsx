@@ -119,7 +119,7 @@ export default function Progress() {
                 tempMap.set(res.data["stats"][i].date, res.data["stats"][i])
             }
             setPoints(Array.from(tempMap.values()))
-            setLabels(res.data["stats"].map((val) => val.date))
+            setLabels(Array.from(tempMap.keys()))
         }).catch((err) => {
             console.log("FAILED TO GET CHART DATA", err)
         })
